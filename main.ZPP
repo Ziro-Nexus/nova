@@ -1,2 +1,3 @@
-if x eq 20:
+if x eq 20 :
     alloc type:n num = x + 20;
+    @print num;
