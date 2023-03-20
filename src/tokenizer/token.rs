@@ -35,9 +35,9 @@ enum MatchHandler {
 impl MatchHandler {
     pub fn new(item: &String) -> Self {
 
-        let mut mtchandler = MatchHandler::Unknown;
+        let mut _mtchandler = MatchHandler::Unknown;
 
-        mtchandler = match item.as_str() {
+        _mtchandler = match item.as_str() {
             // Matching handler for general keys
             "alloc" => MatchHandler::AllocatorVar,
             "=" => MatchHandler::AllocatorAssign,
@@ -64,47 +64,47 @@ impl MatchHandler {
         };
 
         // check for type "type:n"
-        mtchandler = match item.parse::<u32>().is_ok() {
+        _mtchandler = match item.parse::<u32>().is_ok() {
             true => MatchHandler::LiteralNum,
-            false => mtchandler
+            false => _mtchandler
         };
 
         // if the item is already a number, no needs more matchings
-        if let MatchHandler::LiteralNum = mtchandler {
-            return mtchandler;
+        if let MatchHandler::LiteralNum = _mtchandler {
+            return _mtchandler;
         }
 
         // check for type "type:f"
-        mtchandler = match item.parse::<f32>().is_ok() {
+        _mtchandler = match item.parse::<f32>().is_ok() {
             true => MatchHandler::LiteralDecimal,
-            false => mtchandler
+            false => _mtchandler
         };
 
         // if the item is already a decimal, no needs more matchings
-        if let MatchHandler::LiteralDecimal = mtchandler {
-            return mtchandler;
+        if let MatchHandler::LiteralDecimal = _mtchandler {
+            return _mtchandler;
         }
 
         // check for type type:s
         // literal string should start with ' and ends with '
-        mtchandler = match item.starts_with("'") {
+        _mtchandler = match item.starts_with("'") {
             true => match item.ends_with("'") {
                 true => MatchHandler::LiteralString,
-                false => mtchandler
+                false => _mtchandler
             },
-            false => mtchandler
+            false => _mtchandler
         };
 
 
         // check for type type:b
-        mtchandler = match item.as_str() {
+        _mtchandler = match item.as_str() {
             "true" => MatchHandler::LiteralBoolTrue,
             "false" => MatchHandler::LiteralBoolFalse,
 
-            _ => mtchandler
+            _ => _mtchandler
         };
 
-        mtchandler
+        _mtchandler
     } 
 }
 
@@ -133,11 +133,11 @@ impl SubToken {
 // A Token represent a structure to the file that should be readed by the interpreter
 pub struct Token {
     // represent the entire string readed in the file
-    buffer_path: String,
+    pub buffer_path: String,
     // a list of items separated by ";"
-    items: Vec<String>,
+    pub items: Vec<String>,
     // a list of SubTokens
-    sub_tokens: Option<Vec<SubToken>>
+    pub sub_tokens: Option<Vec<SubToken>>
 }
 
 
@@ -173,32 +173,67 @@ impl Token {
         }
     }
 
-    pub fn generate_subtokens(&self) -> Vec<SubToken> {
+    pub fn generate_subtokens(&mut self) {
 
         let mut sub_tokens: Vec<SubToken> = Vec::new();
 
         for (item_id, item) in self.items.iter().enumerate() {
             // detect if the line contains a literal string or some
+            
             if !item.starts_with("'") && !item.ends_with("'") {
+                // if the line does not contains quotes it means no strings needs to be parsed
                 let sb: Vec<String> = item.split(" ")
                     .map(|x| String::from(x))
                     .filter(|x| x.len() > 0)
                     .collect();
+
                 for (id, sub_item) in sb.iter().enumerate() {
                     sub_tokens.push(SubToken::new(id, sub_item.clone(), item_id));
                 }
             } else {
-                // literal string detection in the current line!
-                for i in item.split_ascii_whitespace().enumerate() {
-                    sub_tokens.push(SubToken::new(i.0, i.1.to_string(), item_id));
+                // literal string detection in the current line
+                // a string in the ziroxtranslator is detected inside '' for example 'hello world'
+                // string handler will help us to parse a string subtoken without breaking the whitespace in strings
+                let mut string_handler = String::new();
+                
+                // we need to divide the line
+                for i in item.split_ascii_whitespace().enumerate() {   
+                    
+                    // if the current item in the line start with ' it means is a string and should be pushed to handler
+                    if i.1.to_string().starts_with("'") {
+                        string_handler.push_str(i.1);
+                    }
+                    // if the item in the line ends with ' and not start with ' it means is a closing item for a string
+                    if i.1.to_string().ends_with("'") && !i.1.to_string().starts_with("'") {
+                        // pushing a whitespace to not break the string
+                        string_handler.push(0x20 as char);
+                        string_handler.push_str(i.1);
+      
+                    }
+                    // this means the string handler is already a valid string and should be pushed as token
+                    if string_handler.starts_with("'") && string_handler.ends_with("'") {
+                        sub_tokens.push(SubToken::new(i.0, string_handler.clone(), item_id));
+                        string_handler.clear();
+                        continue;
+                    }
+                    // this means we need to push an intermediate string between the opening and closing qoute
+                    if !i.1.contains("'") && string_handler.starts_with("'") && !string_handler.ends_with("'"){
+                        string_handler.push(0x20 as char);
+                        string_handler.push_str(i.1);
+                        continue;
+                    }
+                    
+                    if !i.1.contains("'") {
+                        sub_tokens.push(SubToken::new(i.0, i.1.to_string().clone(), item_id));
+                    }
+                    
+                    
+                    
                 }
             }
-            
-
         }
-
-        sub_tokens
-
+        self.sub_tokens = Some(sub_tokens);
+        println!("Sub tokens for {} has been generated", self.buffer_path.as_str());
     }
 }
 

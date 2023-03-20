@@ -1,17 +1,20 @@
 mod tokenizer;
+mod sym_table;
+mod shell;
 
 use tokenizer::token::Token;
-
+//use sym_table::symbols::SymbolTable;
+//use sym_table::symbols::Value::*;
 fn main() {
 
     let st = "
-        alloc type:s Greeting = 'hola' + 'mundo';
-        if 5 > 2 :
-            @print 2 + 3 * 20 - 10 / 2
-        ;
+        '2+2';
+        2 + 2
     ";
 
-    let token = Token::new(st, false);
+    let mut token = Token::new(st, false);
     println!("{:#?}", token);
-    println!("{:#?}", token.generate_subtokens());
+    token.generate_subtokens();
+    println!("{:#?}", token.sub_tokens);
+
 }
