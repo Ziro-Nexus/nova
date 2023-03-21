@@ -1,20 +1,15 @@
-mod tokenizer;
+
+mod ast;
 mod sym_table;
+use ast::ast_generator;
 mod shell;
 
-use tokenizer::token::Token;
-//use sym_table::symbols::SymbolTable;
-//use sym_table::symbols::Value::*;
+use sym_table::symbols::SymbolTable;
+
 fn main() {
 
-    let st = "
-        '2+2';
-        2 + 2
-    ";
+    
 
-    let mut token = Token::new(st, false);
-    println!("{:#?}", token);
-    token.generate_subtokens();
-    println!("{:#?}", token.sub_tokens);
-
+    shell::zirox_shell::CommandLineUtility::new(None, "Zirox>> ".to_string())
+        .interactive_shell();
 }

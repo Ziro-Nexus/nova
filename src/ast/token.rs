@@ -212,7 +212,7 @@ impl Token {
                     }
                     // this means the string handler is already a valid string and should be pushed as token
                     if string_handler.starts_with("'") && string_handler.ends_with("'") {
-                        sub_tokens.push(SubToken::new(i.0, string_handler.clone(), item_id));
+                        sub_tokens.push(SubToken::new(i.0 - 1, string_handler.clone(), item_id));
                         string_handler.clear();
                         continue;
                     }
@@ -226,9 +226,6 @@ impl Token {
                     if !i.1.contains("'") {
                         sub_tokens.push(SubToken::new(i.0, i.1.to_string().clone(), item_id));
                     }
-                    
-                    
-                    
                 }
             }
         }
