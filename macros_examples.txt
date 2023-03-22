@@ -1,0 +1,73 @@
+// Define a macro that creates a struct with getters and setters for its fields
+macro_rules! create_struct {
+    ($struct_name:ident { $($field_name:ident : $field_type:ty),+ }) => {
+        struct $struct_name {
+            $( $field_name: $field_type ),+
+        }
+
+        impl $struct_name {
+            $( 
+                fn $field_name(&self) -> $field_type {
+                    self.$field_name
+                }
+
+                fn set_$field_name(&mut self, $field_name: $field_type) {
+                    self.$field_name = $field_name;
+                }
+            )+
+        }
+    };
+}
+
+// Use the macro to create a struct called "Person" with fields for name, age, and occupation
+create_struct!(Person {
+    name: String,
+    age: u32,
+    occupation: String
+});
+
+fn main() {
+    // Create a new person
+    let mut person = Person {
+        name: String::from("Alice"),
+        age: 30,
+        occupation: String::from("Software Engineer")
+    };
+
+    // Get and print the person's name
+    println!("Name: {}", person.name());
+
+    // Set the person's age to 31
+    person.set_age(31);
+
+    // Get and print the person's age
+    println!("Age: {}", person.age());
+}
+
+
+
+
+
+
+
+=========================================================
+
+
+
+
+
+
+
+
+// Define a macro that computes the square of a given number
+macro_rules! square {
+    ($x:expr) => {
+        $x * $x
+    };
+}
+
+fn main() {
+    let x = 5;
+    let result = square!(x);
+    println!("The square of {} is {}", x, result);
+}

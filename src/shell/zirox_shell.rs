@@ -4,7 +4,7 @@ use std::io::stdout;
 use proc_macro2::TokenTree;
 
 use super::super::sym_table::symbols::SymbolTable;
-use super::super::ast_generator::AllocatorExpr;
+use super::super::ast_generator::AllocatorGrammar;
 
 
 pub struct CommandLineUtility<'a> {
@@ -58,14 +58,14 @@ impl<'a> CommandLineUtility<'a> {
                     
                     for line in codebase.clone().lines() {
                         println!("line {}", line);
-                        let res = AllocatorExpr::translate(line);
-                        if res.is_some() {
+                        let res = AllocatorGrammar::translate(line);
+                        if res.is_ok() {
                             let res = res.unwrap();
 
                             for t in res.into_iter() {
                                 match t {
                                    TokenTree::Literal(lit)  => println!("literal value: {:#?}", lit),
-                                   TokenTree::Group(g) => println!("Group value: {:#?}", g.to_string()),
+                                   TokenTree::Group(g) => println!("Group value: {:#?}", g),
                                    TokenTree::Ident(id) => println!("Ident value: {:#?}", id),
                                    TokenTree::Punct(pct) => println!("Punct value: {:#?}", pct),
                                 }

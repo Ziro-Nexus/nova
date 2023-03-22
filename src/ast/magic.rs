@@ -1,3 +1,3 @@
 use syn;
 
-syn::custom_keyword!(malloc);
+syn::custom_keyword!(local);

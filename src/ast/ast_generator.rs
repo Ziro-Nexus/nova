@@ -15,8 +15,8 @@ use super::magic;
 
 // I want to create an Expr parser for example:
 // let var_name = "hello world";
-pub struct AllocatorExpr {
-    let_sym : token::Let,
+pub struct AllocatorGrammar {
+    let_sym : magic::local,
     var_name: syn::Ident,
     equal_sym: token::Eq,
     value: Expr,
@@ -24,7 +24,7 @@ pub struct AllocatorExpr {
     span: Span,
 }
 
-impl Parse for AllocatorExpr {
+impl Parse for AllocatorGrammar {
     fn parse(input: ParseStream) -> syn::Result<Self> {
         let start_span = input.cursor().span();
         let let_sym = input.parse()?;
@@ -56,7 +56,7 @@ impl Parse for AllocatorExpr {
     }
 }
 
-impl ToTokens for AllocatorExpr {
+impl ToTokens for AllocatorGrammar {
     fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
         
         let let_sym = &self.let_sym;
@@ -78,19 +78,51 @@ impl ToTokens for AllocatorExpr {
     }
 }
 
-impl AllocatorExpr {
-    pub fn translate(input: &str) -> Option<TokenStream > {
-        let tokens = syn::parse_str::<AllocatorExpr>(input);
+impl AllocatorGrammar {
+    pub fn translate(input: &str) -> Result<TokenStream, String> {
+        let tokens = syn::parse_str::<AllocatorGrammar>(input);
         if let Err(e) = tokens {
-            println!("An erros has occured for Allocation Expr: \n{}", e.to_string());
-            return None;
+            return Err(e.to_string().clone());
         }
 
         let tokens = tokens.unwrap();
-        Some(tokens.into_token_stream())
+        Ok(tokens.into_token_stream())
     }
 }
 
 struct AstGen {
-    allocator_expr: AllocatorExpr
+    allocator_expr: AllocatorGrammar
+}
+
+
+
+
+
+// macros
+#[macro_export]
+macro_rules! ast_tree {
+    ($x:expr) => {
+        ast_generator::AllocatorGrammar::translate($x)
+    };
+}
+
+#[macro_export]
+macro_rules! print_tree {
+    ($lines:expr) => {
+        let mut line_number = 0;
+        for line in $lines.lines() {
+            let gen = ast_tree!(line);
+    
+            if let Err(e) = gen {
+                println!("Error: {}", e);
+            } else {
+                let gen = gen.ok().unwrap();
+                println!("LINE {}", line_number);
+                println!("{}", gen);
+                println!("{:#?}", gen);
+                println!("----------------------------------------");
+                line_number += 1;
+            }
+        }
+    };
 }
