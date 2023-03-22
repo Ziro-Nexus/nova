@@ -13,7 +13,7 @@ La versión actual de Zirox Translator puede:
 ## Uso 📝 ##
 Para utilizar Zirox Translator, se puede ejecutar el binario zirox_translator y proporcionarle código Zirox para interpretar. Por ejemplo:
 
-`$ echo "local num = 20" | zirox_translator`
+`$ echo "local num = 20;" | zirox_translator`
 
 
 Esto generará un AST para el código de entrada y lo mostrará en la consola.
