@@ -13,6 +13,10 @@ use syn::token;
 use super::magic;
 
 
+
+/*
+                ALLOCATOR GRAMMAR - STRUCT TO PARSE VARIABLE DECLARATIONS TO AST TREE
+*/
 // I want to create an Expr parser for example:
 // let var_name = "hello world";
 pub struct AllocatorGrammar {
@@ -65,6 +69,7 @@ impl ToTokens for AllocatorGrammar {
         let value = &self.value;
         let semicolon = &self.semicolon;
         let span = self.span;
+        let num = 1;
  
 
         tokens.extend(quote_spanned! { span =>
@@ -73,7 +78,7 @@ impl ToTokens for AllocatorGrammar {
            #equal_sym
            #value
            #semicolon
-
+           #num
         });
     }
 }
@@ -90,39 +95,6 @@ impl AllocatorGrammar {
     }
 }
 
-struct AstGen {
-    allocator_expr: AllocatorGrammar
-}
-
-
-
-
-
-// macros
-#[macro_export]
-macro_rules! ast_tree {
-    ($x:expr) => {
-        ast_generator::AllocatorGrammar::translate($x)
-    };
-}
-
-#[macro_export]
-macro_rules! print_tree {
-    ($lines:expr) => {
-        let mut line_number = 0;
-        for line in $lines.lines() {
-            let gen = ast_tree!(line);
-    
-            if let Err(e) = gen {
-                println!("Error: {}", e);
-            } else {
-                let gen = gen.ok().unwrap();
-                println!("LINE {}", line_number);
-                println!("{}", gen);
-                println!("{:#?}", gen);
-                println!("----------------------------------------");
-                line_number += 1;
-            }
-        }
-    };
-}
+/*
+                                ALLOCATOR GRAMMAR - END BLOCK
+*/

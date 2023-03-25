@@ -1,11 +1,15 @@
 
+
 mod ast;
+mod ast_macros;
+use crate::ast_macros::build_macros;
 mod sym_table;
 mod shell;
 
 
+
 use ast::ast_generator;
-use ast::token::Token;
+//use ast::token::Token;
 use sym_table::symbols::SymbolTable;
 
 
@@ -15,12 +19,12 @@ use sym_table::symbols::SymbolTable;
 
 fn main() {
 
-    let lines = std::fs::read_to_string("c.zirox").unwrap();
-    print_tree!(&lines);
+    //let lines = std::fs::read_to_string("c.zirox").unwrap();
+    //print_declaration_tree!(&lines);
 
 
-    //shell::zirox_shell::CommandLineUtility::new(None, "Zirox>> ".to_string())
-       // .interactive_shell();
+    shell::zirox_shell::CommandLineUtility::new(None, "Zirox>> ".to_string())
+       .interactive_shell();
 }
 
 

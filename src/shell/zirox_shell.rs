@@ -1,10 +1,13 @@
+use std::env::args;
 use std::io::prelude::*;
 use std::io::stdin;
 use std::io::stdout;
 use proc_macro2::TokenTree;
+use crate::print_declaration_tree;
 
 use super::super::sym_table::symbols::SymbolTable;
-use super::super::ast_generator::AllocatorGrammar;
+
+use super::super::ast_macros::build_macros;
 
 
 pub struct CommandLineUtility<'a> {
@@ -19,6 +22,26 @@ impl<'a> CommandLineUtility<'a> {
             sym_table,
             prompt
         }
+    }
+
+    fn match_flags(args: &Vec<String>) -> bool {
+        let possible_flag = &args[1];
+        let flag_handler: bool = match possible_flag.as_str() {
+            "-f" => {
+                if args.len() >= 3 {
+                    let path = &args[2];
+                    let codebase = std::fs::read_to_string(path).unwrap();
+                    print_declaration_tree!(codebase);
+                    true
+                } else {
+                    println!("-f needs a file path as argument");
+                    true
+                }
+            },
+            _ => false
+        };
+
+        flag_handler
     }
     
     pub fn interactive_shell(&self) -> bool {
@@ -43,36 +66,22 @@ impl<'a> CommandLineUtility<'a> {
             //println!("{:?}", args);
             match args.get(0).unwrap().as_str() {
                 "exit" => break,
-                "AST" => {
+                "AllocGrammar=>" => {
 
                     if args.len() < 2 {
                         println!("Arguments are required");
                         continue;
                     }
-
-                    let arg = &args[1];
                     
-                    let codebase = std::fs::read_to_string(arg.as_str()).unwrap_or_else(|err| {
-                        panic!("{}", err.to_string())
-                    });
-                    
-                    for line in codebase.clone().lines() {
-                        println!("line {}", line);
-                        let res = AllocatorGrammar::translate(line);
-                        if res.is_ok() {
-                            let res = res.unwrap();
-
-                            for t in res.into_iter() {
-                                match t {
-                                   TokenTree::Literal(lit)  => println!("literal value: {:#?}", lit),
-                                   TokenTree::Group(g) => println!("Group value: {:#?}", g),
-                                   TokenTree::Ident(id) => println!("Ident value: {:#?}", id),
-                                   TokenTree::Punct(pct) => println!("Punct value: {:#?}", pct),
-                                }
-                            }
+                    if !CommandLineUtility::match_flags(&args) {
+                        let mut tmp_str = String::new();
+                        for val in &args[1..] {
+                            tmp_str.push_str(val);
+                            tmp_str.push_str(" ");
                         }
+                        println!("{}", tmp_str);
+                        print_declaration_tree!(tmp_str);
                     }
-                    
                 }
                 _ => ()
             }
