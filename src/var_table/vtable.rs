@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
-pub struct SymbolTable {
+pub struct VarTable{
     pub symbols: HashMap<String, Value>,
 }
 
-impl SymbolTable {
-    pub fn new() -> SymbolTable {
-        SymbolTable {
+impl VarTable{
+    pub fn new() -> VarTable{
+        VarTable{
             symbols: HashMap::new(),
         }
     }

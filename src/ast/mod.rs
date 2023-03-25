@@ -1,3 +1,3 @@
 pub mod token;
-pub mod magic;
+pub mod custom_keys;
 pub mod ast_generator;

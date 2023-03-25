@@ -9,3 +9,4 @@ edition = "2021"
 syn = { version = "*", features = ["full"] }
 quote = "*"
 proc-macro2 = { version = "1.0.52", features = ["span-locations"] }
+evalexpr = "*"

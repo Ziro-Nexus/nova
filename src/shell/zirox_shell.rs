@@ -1,23 +1,25 @@
-use std::env::args;
+
 use std::io::prelude::*;
 use std::io::stdin;
 use std::io::stdout;
-use proc_macro2::TokenTree;
+
+// macros
 use crate::print_declaration_tree;
+use crate::build_expr_tree;
 
-use super::super::sym_table::symbols::SymbolTable;
+use super::super::var_table::vtable::VarTable;
 
-use super::super::ast_macros::build_macros;
+use evalexpr::*;
 
 
 pub struct CommandLineUtility<'a> {
-    pub sym_table: Option<&'a mut SymbolTable>,
+    pub sym_table: Option<&'a mut VarTable>,
     pub prompt: String,
 }
 
 impl<'a> CommandLineUtility<'a> {
     
-    pub fn new(sym_table: Option<&'a mut SymbolTable>, prompt: String) -> Self {
+    pub fn new(sym_table: Option<&'a mut VarTable>, prompt: String) -> Self {
         Self {
             sym_table,
             prompt
@@ -66,7 +68,7 @@ impl<'a> CommandLineUtility<'a> {
             //println!("{:?}", args);
             match args.get(0).unwrap().as_str() {
                 "exit" => break,
-                "AllocGrammar=>" => {
+                "var.grammar" => {
 
                     if args.len() < 2 {
                         println!("Arguments are required");
@@ -82,6 +84,35 @@ impl<'a> CommandLineUtility<'a> {
                         println!("{}", tmp_str);
                         print_declaration_tree!(tmp_str);
                     }
+                },
+                "math.solve" => {
+
+                    if args.len() < 2 {
+                        println!("Arguments are required");
+                        continue;
+                    }
+
+                    let expr = &args[1];
+                    let tree = build_expr_tree!(format!("({})", expr).as_str());
+                    if let Err(e) = tree {
+                        println!("error: {}", e);
+                    } else {
+                        let tree = tree.unwrap();
+                        for exp in tree.into_iter() {
+                            let res = eval(&exp.to_string());
+                            if let Err(e) = res {
+                                println!("error: {}", e.to_string());
+                            } else {
+                                let res = res.unwrap();
+                                match res {
+                                    Value::Int(val) => println!("{}", val),
+                                    Value::Float(val) => println!("{}", val),
+                                    _ => println!("Cannot calculate in this context")
+                                }
+                            }
+                        }
+                    }
+
                 }
                 _ => ()
             }

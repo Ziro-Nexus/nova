@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "evalexpr"
+version = "8.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aacfb566035f8cd02f6ec9247c242f3f9904a0b288ea383abcf4e95df6436a34"
+
+[[package]]
 name = "proc-macro2"
 version = "1.0.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -41,6 +47,7 @@ checksum = "e5464a87b239f13a63a501f2701565754bae92d243d4bb7eb12f6d57d2269bf4"
 name = "zirox_translator"
 version = "0.1.0"
 dependencies = [
+ "evalexpr",
  "proc-macro2",
  "quote",
  "syn",

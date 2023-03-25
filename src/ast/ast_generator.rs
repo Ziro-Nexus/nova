@@ -10,8 +10,7 @@ use syn::parse::ParseStream;
 use syn::token;
 
 // getting custom magic keys
-use super::magic;
-
+use super::custom_keys;
 
 
 /*
@@ -20,11 +19,10 @@ use super::magic;
 // I want to create an Expr parser for example:
 // let var_name = "hello world";
 pub struct AllocatorGrammar {
-    let_sym : magic::local,
+    let_sym : custom_keys::my,
     var_name: syn::Ident,
     equal_sym: token::Eq,
     value: Expr,
-    semicolon: token::Semi,
     span: Span,
 }
 
@@ -35,7 +33,6 @@ impl Parse for AllocatorGrammar {
         let var_name = input.parse()?;
         let equal_sym = input.parse()?;
         let value: Expr = input.parse()?;
-        let semicolon = input.parse()?;
         let end_span = input.cursor().span();
         let span = start_span.join(end_span).unwrap_or(start_span);
         
@@ -53,7 +50,6 @@ impl Parse for AllocatorGrammar {
             var_name,
             equal_sym,
             value,
-            semicolon,
             span,
 
         })
@@ -67,9 +63,7 @@ impl ToTokens for AllocatorGrammar {
         let var_name = &self.var_name;
         let equal_sym = &self.equal_sym;
         let value = &self.value;
-        let semicolon = &self.semicolon;
         let span = self.span;
-        let num = 1;
  
 
         tokens.extend(quote_spanned! { span =>
@@ -77,8 +71,6 @@ impl ToTokens for AllocatorGrammar {
            #var_name
            #equal_sym
            #value
-           #semicolon
-           #num
         });
     }
 }
@@ -98,3 +90,24 @@ impl AllocatorGrammar {
 /*
                                 ALLOCATOR GRAMMAR - END BLOCK
 */
+
+
+
+/*
+                                Expr GRAMMAR - END BLOCK
+*/
+
+// Handling expr it's easy, it is pre-defined
+pub struct ExprGrammar;
+
+impl ExprGrammar {
+    pub fn translate(input: &str) -> Result<TokenStream, String> {
+        let tokens = syn::parse_str::<Expr>(input);
+        if let Err(e) = tokens {
+            return Err(e.to_string().clone());
+        }
+
+        let tokens = tokens.unwrap();
+        Ok(tokens.into_token_stream())
+    }
+}
