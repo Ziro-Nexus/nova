@@ -1,6 +1,6 @@
-## Zirox Translator 🤖 ##
+## Nova 🤖 ##
 
-Zirox Translator es un intérprete basado en Rust para el lenguaje de programación Zirox. El intérprete utiliza las librerías syn y quote para generar un árbol de sintaxis abstracta (AST) para el código Zirox de entrada.
+Nova es un intérprete basado en Rust para el lenguaje de programación nova. El intérprete utiliza las librerías syn y quote para generar un árbol de sintaxis abstracta (AST) para el código Zirox de entrada.
 
 ## Características 🚀 ##
 La versión actual de Zirox Translator puede:
@@ -11,7 +11,7 @@ La versión actual de Zirox Translator puede:
 - Usar la macro print_tree! para generar un AST para varias líneas de código y mostrarlas en la consola.
 
 ## Uso 📝 ##
-Para utilizar Zirox Translator, se puede ejecutar el binario zirox_translator y proporcionarle código Zirox para interpretar. Por ejemplo:
+Para utilizar Nova, se puede ejecutar el binario nova y proporcionarle código Zirox para interpretar. Por ejemplo:
 
 `$ echo "local num = 20;" | zirox_translator`
 
