@@ -33,7 +33,7 @@ impl<'a> ZiroxEngine<'a> {
     }
 
 
-    fn grammar_checks(&mut self) {
+    fn grammar_parser(&mut self) {
         let mut line_number = 0;
 
         for line in self.get_file_lines() {
@@ -68,7 +68,7 @@ fn main() {
         "c.zirox".to_owned(),
         &mut vartable
     );
-    z_engine.grammar_checks();
+    z_engine.grammar_parser();
 
     for tstream in z_engine.syntax_tree.iter() {
         println!("{:#?}", &tstream);
