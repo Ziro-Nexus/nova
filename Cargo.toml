@@ -1,5 +1,5 @@
 [package]
-name = "hacker_lang"
+name = "nova"
 version = "0.0.1"
 edition = "2023"
 
