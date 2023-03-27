@@ -1,1 +1,11 @@
-asdas
+set nombre = "Andres";
+set saludo = (
+    "Hola " + "mundo!"
+);
+set suma = (
+    20 + 98 + 38
+);
+
+stdout write nombre;
+stdout write saludo;
+stdout write suma;

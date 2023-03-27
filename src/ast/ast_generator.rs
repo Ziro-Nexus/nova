@@ -1,6 +1,8 @@
+use proc_macro2::Ident;
 use proc_macro2::Span;
 use proc_macro2::TokenStream;
 
+use quote::quote;
 use quote::quote_spanned;
 use quote::ToTokens;
 
@@ -37,14 +39,6 @@ impl Parse for AllocatorGrammar {
         let span = start_span.join(end_span).unwrap_or(start_span);
         
 
-        let v: String = value.clone().into_token_stream().to_string();
-
-        // I just need to geet the literal type!!!!
-        match &value {
-            
-            _ => ()
-        }
-        
         Ok(Self {
             let_sym,
             var_name,
@@ -94,7 +88,7 @@ impl AllocatorGrammar {
 
 
 /*
-                                Expr GRAMMAR - END BLOCK
+                                Expr GRAMMAR - Start BLOCK
 */
 
 // Handling expr it's easy, it is pre-defined
@@ -103,6 +97,61 @@ pub struct ExprGrammar;
 impl ExprGrammar {
     pub fn translate(input: &str) -> Result<TokenStream, String> {
         let tokens = syn::parse_str::<Expr>(input);
+        if let Err(e) = tokens {
+            return Err(e.to_string().clone());
+        }
+
+        let tokens = tokens.unwrap();
+        Ok(tokens.into_token_stream())
+    }
+}
+
+/*
+                                Expr GRAMMAR - end BLOCK
+*/
+
+
+/*
+                                BULTIN Utilities GRAMMAR - Start BLOCK
+*/
+
+pub struct StdoutWriteGrammar {
+    id: custom_keys::stdout,
+    handler: custom_keys::write,
+    value: Ident
+}
+
+impl Parse for StdoutWriteGrammar {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let id = input.parse()?;
+        let handler = input.parse()?;
+        let value = input.parse()?;
+
+        Ok(Self {
+            id,
+            handler,
+            value
+        })
+    }
+}
+
+impl ToTokens for StdoutWriteGrammar {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let id = &self.id;
+        let handler = &self.handler;
+        let value = &self.value;
+
+        tokens.extend(quote!{
+            #id
+            #handler
+            #value
+         });
+    }
+}
+
+impl StdoutWriteGrammar {
+    pub fn translate(input: &str) -> Result<TokenStream, String> {
+        let tokens = syn::parse_str::<StdoutWriteGrammar>(input);
         if let Err(e) = tokens {
             return Err(e.to_string().clone());
         }

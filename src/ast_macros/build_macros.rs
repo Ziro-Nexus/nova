@@ -39,3 +39,12 @@ macro_rules! build_expr_tree {
         crate::ast_generator::ExprGrammar::translate($x)
     };
 }
+
+
+// macros for builtin utilities
+#[macro_export]
+macro_rules! build_stdout_write_tree {
+    ($x:expr) => {
+        crate::ast_generator::StdoutWriteGrammar::translate($x)
+    };
+}

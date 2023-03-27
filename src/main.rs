@@ -19,8 +19,6 @@ fn main() {
     nova_engine.resolve_idents().unwrap_or_else(|e| {
         eprintln!("{}", e)
     });
-
-    println!("{:?}", nova_engine.get_table().get_vars());
 }
 
 

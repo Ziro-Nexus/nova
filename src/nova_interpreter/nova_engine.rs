@@ -8,8 +8,9 @@ use super::super::var_table::vtable::VarTable;
 use super::super::var_table::vtable::Value;
 
 use crate::build_declaration_tree;
+use crate::build_stdout_write_tree;
 
-
+use evalexpr;
 
 
 
@@ -39,17 +40,22 @@ impl NovaEngine {
         let mut line_number = 0;
 
         for line in self.get_file_lines() {
-            let checks = [
-                build_declaration_tree!(&line),
-                //build_expr_tree!(&line)
+            // loading syntax tree for builtin functions
+            // TODO: HANDLE ERRORS IN SINTAX
+            let builtin_stdout_write = build_stdout_write_tree!(&line);
 
-            ].iter().for_each(|result| {
-                if result.is_ok() {
-                    self.syntax_tree.push(result.clone().unwrap().into_token_stream());
-                } else {
-                    eprintln!("{}", &result.clone().err().unwrap())
-                }
-            });
+            if builtin_stdout_write.is_ok() {
+                self.syntax_tree.push(builtin_stdout_write.clone().unwrap().into_token_stream());
+            }
+            
+            // loading syntax tree for variable declaration
+            // TODO: HANDLE ERRORS IN SINTAX
+            let declaration_tree = build_declaration_tree!(&line);
+
+            if declaration_tree.is_ok() {
+                self.syntax_tree.push(declaration_tree.clone().unwrap().into_token_stream());
+            }
+
             line_number += 1;
         }
     }
@@ -68,7 +74,6 @@ impl NovaEngine {
                         TokenTree::Ident(e) => {
                             match e.to_string().as_str() {
                                 "set" => {
-                                    println!("set trigger called: {}", &handler_stream.to_string());
                                     let v = handler_stream.into_token_stream();
 
                                     let mut id = String::new();
@@ -93,8 +98,27 @@ impl NovaEngine {
                                                             value = Value::Str(e.clone());
                                                             return; 
                                                         }
-                                                    }
+                                                        
+                                                    },
                                                     // TODO: handle TokenTree::Group to parse full expressions
+                                                    TokenTree::Group(g) => {
+                                                        let group_expr = g.to_string();
+                                                        let eval_result = evalexpr::eval(&group_expr);
+
+                                                        if let Err(e) = eval_result {
+                                                            eprintln!("{}", e);
+                                                            return;
+                                                        } else {
+                                                            let eval_result = eval_result.unwrap();
+                                                            match eval_result {
+                                                                evalexpr::Value::Int(i) => value = Value::Integer(i),
+                                                                evalexpr::Value::String(s) => value = Value::Str(s.clone()),
+                                                                evalexpr::Value::Float(f) => value = Value::Float(f),
+                                                                _ => eprintln!("error parsing expression")
+                                                            }   
+                                                        }
+                                                    }
+                                                    
                                                     // TODO: handle var names in variable expressions: set age = <var>;
                                                     _ => eprintln!("Error: parsing literal")
                                                 }
@@ -109,10 +133,24 @@ impl NovaEngine {
                                     } else {
                                         // TODO: CONFIRM IS VAR NAME ALREADY EXIST, IN THAT CASE, PANIC
                                         self.var_table.set(id.clone(), value);
-                                        println!("Nueva variable cargada en memoria con id = '{id}'");
                                     }
                                 },
-                                _ => println!("UNHANDLED IDENT: {} needs to be handled", e.to_string())
+                                // TODO: CREATE AN EXTERNET FUNCTION TO HANDLE THIS BUILTIN FUNCTION
+                                "stdout" => {
+                                    let v = handler_stream.into_token_stream().into_iter().last().unwrap().to_string();
+                                    
+                                    let val = self.get_table().get(v.as_str()).unwrap_or_else(|| {
+                                        panic!("undeclared variable {v}")
+                                    });
+
+                                    match val {
+                                        Value::Integer(e) => println!("{}", e),
+                                        Value::Float(f) => println!("{}", f),
+                                        Value::Str(s) => println!("{}", s),
+                                        _ => ()
+                                    }
+                                },
+                                _ => ()
                             }
                         },
                         _ => continue
@@ -121,7 +159,7 @@ impl NovaEngine {
             }
 
         } else {
-            return Err("syntax tree has errors");
+            return Err("syntax tree is empty");
         }
 
         Ok(())
