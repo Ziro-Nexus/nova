@@ -18,12 +18,17 @@ impl VarTable{
     pub fn set(&mut self, name: String, value: Value) {
         self.symbols.insert(name, value);
     }
+
+    pub fn get_vars(&self) -> &HashMap<String, Value> {
+        &self.symbols
+    }
 }
 
+#[derive(Debug)]
 pub enum Value {
     Integer(i64),
     Float(f64),
     Boolean(bool),
-    String(String),
+    Str(String),
     Null,
 }
