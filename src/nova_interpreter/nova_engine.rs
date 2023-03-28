@@ -1,6 +1,7 @@
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use std::env::args;
+use std::io::Read;
 use proc_macro2::TokenTree;
 
 use proc_macro2::TokenTree::Group;
@@ -34,10 +35,13 @@ impl NovaEngine {
     pub fn get_table(&self) -> &VarTable {
         &self.var_table
     }
+    pub fn get_tree(&self) -> &Vec<TokenStream>{
+        &self.syntax_tree
+    }
 
 
     pub fn grammar_parser(&mut self) {
-        let mut line_number = 0;
+        let mut line_number = 1;
 
         for line in self.get_file_lines() {
             // loading syntax tree for builtin functions
@@ -46,6 +50,8 @@ impl NovaEngine {
 
             if builtin_stdout_write.is_ok() {
                 self.syntax_tree.push(builtin_stdout_write.clone().unwrap().into_token_stream());
+                line_number += 1;
+                continue;
             }
             
             // loading syntax tree for variable declaration
@@ -54,8 +60,11 @@ impl NovaEngine {
 
             if declaration_tree.is_ok() {
                 self.syntax_tree.push(declaration_tree.clone().unwrap().into_token_stream());
+                line_number += 1;
+                continue;
             }
 
+            eprintln!("{line_number}. Error: Some errors ocurred:\n-{:?}\n-{:?}", declaration_tree.err(), builtin_stdout_write.err());
             line_number += 1;
         }
     }
@@ -84,6 +93,7 @@ impl NovaEngine {
                                         match handler_idx {
                                             1 => id = el.to_string(), // getting the name of the variabe
                                             3 => { // getting the value of the variable
+                                                // TODO: FIX LITERALS WITHOUT PARENTESIS LIKE: 2+2+2.
                                                 match el {
                                                     TokenTree::Literal(lit) => {
                                                         if let Ok(e) = lit.to_string().parse::<i64>() {
@@ -95,11 +105,19 @@ impl NovaEngine {
                                                             return;
                                                         }
                                                         if let Ok(e) = lit.to_string().parse::<String>() {
-                                                            value = Value::Str(e.clone());
-                                                            return; 
+                                                            
+                                                            //parsing single string literal to handle break line
+                                                            let parsed_str = String::from(
+                                                                e.to_owned().replace("\\n", "\n")
+                                                                .trim_matches('"')
+                                                            );
+                                                            
+                                                            value = Value::Str(parsed_str.to_owned());
+                                                            return;
                                                         }
                                                         
                                                     },
+                                                    
                                                     // TODO: handle TokenTree::Group to parse full expressions
                                                     TokenTree::Group(g) => {
                                                         let group_expr = g.to_string();
@@ -112,8 +130,9 @@ impl NovaEngine {
                                                             let eval_result = eval_result.unwrap();
                                                             match eval_result {
                                                                 evalexpr::Value::Int(i) => value = Value::Integer(i),
-                                                                evalexpr::Value::String(s) => value = Value::Str(s.clone()),
+                                                                evalexpr::Value::String(s) => value = Value::Str(s),
                                                                 evalexpr::Value::Float(f) => value = Value::Float(f),
+                                                                evalexpr::Value::Boolean(f) => value = Value::Boolean(f),
                                                                 _ => eprintln!("error parsing expression")
                                                             }   
                                                         }
@@ -144,9 +163,10 @@ impl NovaEngine {
                                     });
 
                                     match val {
-                                        Value::Integer(e) => println!("{}", e),
-                                        Value::Float(f) => println!("{}", f),
-                                        Value::Str(s) => println!("{}", s),
+                                        Value::Integer(e) => print!("{}", e),
+                                        Value::Float(f) => print!("{}", f),
+                                        Value::Str(s) => print!("{}", s.to_string()),
+                                        Value::Boolean(s) => print!("{}", s),
                                         _ => ()
                                     }
                                 },
@@ -170,7 +190,7 @@ impl NovaEngine {
        std::fs::read_to_string(self.filepath.as_str())
             .expect("Failed opening file")
             .split(";").map(|line| line.trim().to_owned())
-            .filter(|line| !line.is_empty())
+            .filter(|line| !line.is_empty().to_owned())
             .collect()
     }
 }

@@ -1,0 +1,24 @@
+set condicion1 = (
+    true == false
+);
+set condicion2 = (
+    true == true
+);
+set condicion3 = (
+    true != false
+);
+set condicion4 = (
+    20 > 9
+);
+set condicion5 = (
+    5 > 6
+);
+
+set resultado = "result:\n";
+
+stdout write resultado;
+stdout write condicion1;
+stdout write condicion2;
+stdout write condicion3;
+stdout write condicion4;
+stdout write condicion5;
