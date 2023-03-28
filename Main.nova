@@ -1,24 +1,16 @@
-set condicion1 = (
-    true == false
-);
-set condicion2 = (
-    true == true
-);
-set condicion3 = (
-    true != false
-);
-set condicion4 = (
-    20 > 9
-);
-set condicion5 = (
-    5 > 6
+set edad1 = 24;
+set edad2 = 42;
+set edad3 = 27;
+
+set persona1 = "Fernando";
+set persona2 = "Luis";
+set persona3 = "Alfonso";
+set break_line = "\n";
+
+set edades = (
+    "var::persona1" + " tiene " + "var::edad1 años" + "var::break_line" +
+    "var::persona2" + " tiene " + "var::edad2 años" + "var::break_line" +
+    "var::persona3" + " tiene " + "var::edad3 años" + "var::break_line"
 );
 
-set resultado = "result:\n";
-
-stdout write resultado;
-stdout write condicion1;
-stdout write condicion2;
-stdout write condicion3;
-stdout write condicion4;
-stdout write condicion5;
+stdout write edades;

@@ -96,6 +96,7 @@ impl NovaEngine {
                                                 // TODO: FIX LITERALS WITHOUT PARENTESIS LIKE: 2+2+2.
                                                 match el {
                                                     TokenTree::Literal(lit) => {
+                                                        
                                                         if let Ok(e) = lit.to_string().parse::<i64>() {
                                                              value = Value::Integer(e);
                                                              return; 
@@ -120,7 +121,27 @@ impl NovaEngine {
                                                     
                                                     // TODO: handle TokenTree::Group to parse full expressions
                                                     TokenTree::Group(g) => {
-                                                        let group_expr = g.to_string();
+                                                        let mut group_expr = g.to_string();
+                                                        
+                                                        for x in self.get_table().get_vars() {
+                                                            if group_expr.contains(format!("var::{}", x.0).as_str()) {
+                                                                
+                                                                match x.1 {
+                                                                    Value::Integer(i) => {
+                                                                        group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &i.to_string());
+                                                                    },
+                                                                    Value::Str(s) => {
+                                                                        // TODO: HANDLE STRING INTERPOLATION:GROUP
+                                                                        group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &s.to_string());   
+                                                                    },
+                                                                    Value::Float(f) => group_expr = group_expr.replace(x.0, &f.to_string()),
+                                                                    Value::Boolean(b) => group_expr = group_expr.replace(x.0, &b.to_string()),
+                                                                    _ => panic!("Error variable in expression")
+                                                                }
+                                                            }
+                                                        }
+                                                        
+
                                                         let eval_result = evalexpr::eval(&group_expr);
 
                                                         if let Err(e) = eval_result {
@@ -128,6 +149,7 @@ impl NovaEngine {
                                                             return;
                                                         } else {
                                                             let eval_result = eval_result.unwrap();
+                                                            
                                                             match eval_result {
                                                                 evalexpr::Value::Int(i) => value = Value::Integer(i),
                                                                 evalexpr::Value::String(s) => value = Value::Str(s),
