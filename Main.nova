@@ -1,5 +1,5 @@
-set edad1 = (24 ^ 2 + 24 ^ 2);
-set edad2 = (var::edad1 + var::edad1);
+set edad1 = (2.0);
+set edad2 = (var::edad1 + 2);
 
 
 stdout write edad2;

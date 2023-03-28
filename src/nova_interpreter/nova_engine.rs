@@ -1,10 +1,7 @@
 use proc_macro2::TokenStream;
 use quote::ToTokens;
-use std::env::args;
-use std::io::Read;
 use proc_macro2::TokenTree;
 
-use proc_macro2::TokenTree::Group;
 use super::super::var_table::vtable::VarTable;
 use super::super::var_table::vtable::Value;
 
@@ -35,7 +32,8 @@ impl NovaEngine {
     pub fn get_table(&self) -> &VarTable {
         &self.var_table
     }
-    pub fn get_tree(&self) -> &Vec<TokenStream>{
+
+    pub fn _get_tree(&self) -> &Vec<TokenStream>{
         &self.syntax_tree
     }
 
@@ -87,6 +85,7 @@ impl NovaEngine {
                                 1 => id = el.to_string(), // getting the name of the variabe
                                 3 => { // getting the value of the variable
                                     // TODO: FIX LITERALS WITHOUT PARENTESIS LIKE: 2+2+2.
+                                    // TODO: FIX PASSING VARIABLES AS LITERALS
                                     match el {
                                         TokenTree::Literal(lit) => {
                                             
@@ -119,18 +118,20 @@ impl NovaEngine {
 
                                             // TODO: HANDLE STRING INTERPOLATION:GROUP                                                        
                                             for x in self.get_table().get_vars() {
+                                                
                                                 if group_expr.contains(format!("var::{}", x.0).as_str()) {
                                                     match x.1 {
                                                         Value::Integer(i) => {
-                                                            
                                                             group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &i.to_string());
                                                         },
                                                         Value::Str(s) => {
-                                                            
                                                             group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &s.to_string());   
                                                         },
+                                                        // TODO: fix float values unexpected converted to integer values
                                                         Value::Float(f) => {
-                                                            group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &f.to_string()); 
+                                                            
+                                                            group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &format!("{:.2}", f));
+                                                        
                                                         },
                                                         Value::Boolean(b) => {
                                                             group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &b.to_string()); 
@@ -184,7 +185,7 @@ impl NovaEngine {
 
                         match val {
                             Value::Integer(e) => print!("{}", e),
-                            Value::Float(f) => print!("{}", f),
+                            Value::Float(f) => print!("{:.2}", f),
                             Value::Str(s) => print!("{}", s.to_string()),
                             Value::Boolean(s) => print!("{}", s),
                             _ => ()
