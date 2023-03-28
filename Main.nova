@@ -1,16 +1,5 @@
-set edad1 = 24;
-set edad2 = 42;
-set edad3 = 27;
+set edad1 = (24 ^ 2 + 24 ^ 2);
+set edad2 = (var::edad1 + var::edad1);
 
-set persona1 = "Fernando";
-set persona2 = "Luis";
-set persona3 = "Alfonso";
-set break_line = "\n";
 
-set edades = (
-    "var::persona1" + " tiene " + "var::edad1 años" + "var::break_line" +
-    "var::persona2" + " tiene " + "var::edad2 años" + "var::break_line" +
-    "var::persona3" + " tiene " + "var::edad3 años" + "var::break_line"
-);
-
-stdout write edades;
+stdout write edad2;

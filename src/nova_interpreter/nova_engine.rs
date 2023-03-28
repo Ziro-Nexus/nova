@@ -69,134 +69,147 @@ impl NovaEngine {
         }
     }
 
-    // resolve Ident structure like AllocatorGrammar
+
+    // private method used to resolve_idents to handle the matching of ident symbols
+    fn match_idents(&mut self, handler_stream: &TokenStream, tree: &TokenTree) {
+        match &tree {
+            TokenTree::Ident(e) => {
+                match e.to_string().as_str() {
+                    "set" => {
+                        let v = handler_stream.into_token_stream();
+
+                        let mut id = String::new();
+                        let mut value = Value::Null;
+
+                        let mut handler_idx = 0;
+                        v.into_iter().for_each(|el| {
+                            match handler_idx {
+                                1 => id = el.to_string(), // getting the name of the variabe
+                                3 => { // getting the value of the variable
+                                    // TODO: FIX LITERALS WITHOUT PARENTESIS LIKE: 2+2+2.
+                                    match el {
+                                        TokenTree::Literal(lit) => {
+                                            
+                                            if let Ok(e) = lit.to_string().parse::<i64>() {
+                                                 value = Value::Integer(e);
+                                                 return; 
+                                            }
+                                            if let Ok(e) = lit.to_string().parse::<f64>() {
+                                                value = Value::Float(e);
+                                                return;
+                                            }
+                                            if let Ok(e) = lit.to_string().parse::<String>() {
+                                                
+                                                //parsing single string literal to handle break line
+                                                let parsed_str = String::from(
+                                                    e.to_owned().replace("\\n", "\n")
+                                                    .trim_matches('"')
+                                                );
+                                                
+                                                value = Value::Str(parsed_str.to_owned());
+                                                return;
+                                            }
+                                            
+                                        },
+                                        
+                                        // TODO: handle TokenTree::Group to parse full expressions
+                                        TokenTree::Group(g) => {
+                                            let mut group_expr = g.to_string().replace(" ", "");
+                                            
+
+                                            // TODO: HANDLE STRING INTERPOLATION:GROUP                                                        
+                                            for x in self.get_table().get_vars() {
+                                                if group_expr.contains(format!("var::{}", x.0).as_str()) {
+                                                    match x.1 {
+                                                        Value::Integer(i) => {
+                                                            
+                                                            group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &i.to_string());
+                                                        },
+                                                        Value::Str(s) => {
+                                                            
+                                                            group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &s.to_string());   
+                                                        },
+                                                        Value::Float(f) => {
+                                                            group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &f.to_string()); 
+                                                        },
+                                                        Value::Boolean(b) => {
+                                                            group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &b.to_string()); 
+                                                        },
+                                                        _ => panic!("Error variable in expression")
+                                                    }
+                                                }
+                                            }
+
+                                            let eval_result = evalexpr::eval(&group_expr);
+
+                                            if let Err(e) = eval_result {
+                                                eprintln!("{}", e);
+                                                return;
+                                            } else {
+                                                let eval_result = eval_result.unwrap();
+                                                
+                                                match eval_result {
+                                                    evalexpr::Value::Int(i) => value = Value::Integer(i),
+                                                    evalexpr::Value::String(s) => value = Value::Str(s),
+                                                    evalexpr::Value::Float(f) => value = Value::Float(f),
+                                                    evalexpr::Value::Boolean(f) => value = Value::Boolean(f),
+                                                    _ => eprintln!("error parsing expression")
+                                                }   
+                                            }
+                                        }
+                                        
+                                        // TODO: handle var names in variable expressions: set age = <var>;
+                                        _ => eprintln!("Error: parsing literal")
+                                    }
+                                }
+                                _ => (),
+                            };
+                            handler_idx += 1;
+                        });
+                        
+                        if let Value::Null = value {
+                            eprintln!("Error: parsing variable declaration")
+                        } else {
+                            // TODO: CONFIRM IS VAR NAME ALREADY EXIST, IN THAT CASE, PANIC
+                            self.var_table.set(id.clone(), value);
+                        }
+                    },
+                    // TODO: CREATE AN EXTERNET FUNCTION TO HANDLE THIS BUILTIN FUNCTION
+                    "stdout" => {
+                        let v = handler_stream.into_token_stream().into_iter().last().unwrap().to_string();
+                        
+                        let val = self.get_table().get(v.as_str()).unwrap_or_else(|| {
+                            panic!("undeclared variable {v}")
+                        });
+
+                        match val {
+                            Value::Integer(e) => print!("{}", e),
+                            Value::Float(f) => print!("{}", f),
+                            Value::Str(s) => print!("{}", s.to_string()),
+                            Value::Boolean(s) => print!("{}", s),
+                            _ => ()
+                        }
+                    },
+                    _ => ()
+                }
+            },
+            _ => ()
+        }
+    }
+
+    // resolve Ident structures
     pub fn resolve_idents(&mut self) -> Result<(), &'static str>{
         
         if !self.syntax_tree.is_empty() {
 
-            for stream in self.syntax_tree.iter() {
+            let tree_clone = self.syntax_tree.clone();
+
+            for stream in tree_clone.iter() {
 
                 let handler_stream = &stream.clone();
 
                 for tree in stream.into_token_stream() {
-                    match &tree {
-                        TokenTree::Ident(e) => {
-                            match e.to_string().as_str() {
-                                "set" => {
-                                    let v = handler_stream.into_token_stream();
-
-                                    let mut id = String::new();
-                                    let mut value = Value::Null;
-
-                                    let mut handler_idx = 0;
-                                    v.into_iter().for_each(|el| {
-                                        match handler_idx {
-                                            1 => id = el.to_string(), // getting the name of the variabe
-                                            3 => { // getting the value of the variable
-                                                // TODO: FIX LITERALS WITHOUT PARENTESIS LIKE: 2+2+2.
-                                                match el {
-                                                    TokenTree::Literal(lit) => {
-                                                        
-                                                        if let Ok(e) = lit.to_string().parse::<i64>() {
-                                                             value = Value::Integer(e);
-                                                             return; 
-                                                        }
-                                                        if let Ok(e) = lit.to_string().parse::<f64>() {
-                                                            value = Value::Float(e);
-                                                            return;
-                                                        }
-                                                        if let Ok(e) = lit.to_string().parse::<String>() {
-                                                            
-                                                            //parsing single string literal to handle break line
-                                                            let parsed_str = String::from(
-                                                                e.to_owned().replace("\\n", "\n")
-                                                                .trim_matches('"')
-                                                            );
-                                                            
-                                                            value = Value::Str(parsed_str.to_owned());
-                                                            return;
-                                                        }
-                                                        
-                                                    },
-                                                    
-                                                    // TODO: handle TokenTree::Group to parse full expressions
-                                                    TokenTree::Group(g) => {
-                                                        let mut group_expr = g.to_string();
-                                                        
-                                                        for x in self.get_table().get_vars() {
-                                                            if group_expr.contains(format!("var::{}", x.0).as_str()) {
-                                                                
-                                                                match x.1 {
-                                                                    Value::Integer(i) => {
-                                                                        group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &i.to_string());
-                                                                    },
-                                                                    Value::Str(s) => {
-                                                                        // TODO: HANDLE STRING INTERPOLATION:GROUP
-                                                                        group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &s.to_string());   
-                                                                    },
-                                                                    Value::Float(f) => group_expr = group_expr.replace(x.0, &f.to_string()),
-                                                                    Value::Boolean(b) => group_expr = group_expr.replace(x.0, &b.to_string()),
-                                                                    _ => panic!("Error variable in expression")
-                                                                }
-                                                            }
-                                                        }
-                                                        
-
-                                                        let eval_result = evalexpr::eval(&group_expr);
-
-                                                        if let Err(e) = eval_result {
-                                                            eprintln!("{}", e);
-                                                            return;
-                                                        } else {
-                                                            let eval_result = eval_result.unwrap();
-                                                            
-                                                            match eval_result {
-                                                                evalexpr::Value::Int(i) => value = Value::Integer(i),
-                                                                evalexpr::Value::String(s) => value = Value::Str(s),
-                                                                evalexpr::Value::Float(f) => value = Value::Float(f),
-                                                                evalexpr::Value::Boolean(f) => value = Value::Boolean(f),
-                                                                _ => eprintln!("error parsing expression")
-                                                            }   
-                                                        }
-                                                    }
-                                                    
-                                                    // TODO: handle var names in variable expressions: set age = <var>;
-                                                    _ => eprintln!("Error: parsing literal")
-                                                }
-                                            }
-                                            _ => (),
-                                        };
-                                        handler_idx += 1;
-                                    });
-                                    
-                                    if let Value::Null = value {
-                                        eprintln!("Error: parsing variable declaration")
-                                    } else {
-                                        // TODO: CONFIRM IS VAR NAME ALREADY EXIST, IN THAT CASE, PANIC
-                                        self.var_table.set(id.clone(), value);
-                                    }
-                                },
-                                // TODO: CREATE AN EXTERNET FUNCTION TO HANDLE THIS BUILTIN FUNCTION
-                                "stdout" => {
-                                    let v = handler_stream.into_token_stream().into_iter().last().unwrap().to_string();
-                                    
-                                    let val = self.get_table().get(v.as_str()).unwrap_or_else(|| {
-                                        panic!("undeclared variable {v}")
-                                    });
-
-                                    match val {
-                                        Value::Integer(e) => print!("{}", e),
-                                        Value::Float(f) => print!("{}", f),
-                                        Value::Str(s) => print!("{}", s.to_string()),
-                                        Value::Boolean(s) => print!("{}", s),
-                                        _ => ()
-                                    }
-                                },
-                                _ => ()
-                            }
-                        },
-                        _ => continue
-                    }
+                    self.match_idents(handler_stream, &tree);
                 }
             }
 
