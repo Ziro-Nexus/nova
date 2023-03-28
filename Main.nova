@@ -1,5 +1,13 @@
-set edad1 = (2.0);
-set edad2 = (var::edad1 + 2);
 
+set nombre = "Juan";
+set sueldo = 1000000;
+set iva = 0.19;
+set valor_iva = (var::sueldo * var::iva);
 
-stdout write edad2;
+set res = (
+    "El salario de var::nombre es: var::sueldo\n" +
+    "El IVA de Colombia es: var::iva\n" +
+    "El IVA calculado en base al salario de var::nombre es : var::valor_iva"
+);
+
+stdout write res;

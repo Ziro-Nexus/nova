@@ -113,19 +113,28 @@ impl NovaEngine {
                                         
                                         // TODO: handle TokenTree::Group to parse full expressions
                                         TokenTree::Group(g) => {
-                                            let mut group_expr = g.to_string().replace(" ", "");
+                                            // TODO: VERY IMPORTANT, HANDLE THE REMOVE OF WHITESPACES BEFORE EVAL
+                                            let mut group_expr = g.to_string();
+
+                                            // this handle the whitespace when passing variables. But i don't think is the best way to do it
+                                            if group_expr.contains("var ::") {
+                                                group_expr = group_expr.replace(" ", "");
+                                            }
                                             
 
                                             // TODO: HANDLE STRING INTERPOLATION:GROUP                                                        
                                             for x in self.get_table().get_vars() {
                                                 
                                                 if group_expr.contains(format!("var::{}", x.0).as_str()) {
+                                                    
                                                     match x.1 {
                                                         Value::Integer(i) => {
                                                             group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &i.to_string());
                                                         },
                                                         Value::Str(s) => {
-                                                            group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &s.to_string());   
+                                                            //let s = format!("\"{}\"", s);
+
+                                                            group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &s.as_str());
                                                         },
                                                         // TODO: fix float values unexpected converted to integer values
                                                         Value::Float(f) => {
@@ -140,8 +149,10 @@ impl NovaEngine {
                                                     }
                                                 }
                                             }
+                                            // DEBUG: GROUP OF EXPRESSIONS
+                                            //println!("{group_expr}");
 
-                                            let eval_result = evalexpr::eval(&group_expr);
+                                            let eval_result = evalexpr::eval(&group_expr.replace("\\n", "\n"));
 
                                             if let Err(e) = eval_result {
                                                 eprintln!("{}", e);
