@@ -1,6 +1,15 @@
-nya num = 20;
-nya num = (20 + var::num);
-nya num = (20 + var::num);
-nya num = (var::num * 2);
+nya expr1 = (true == !false);
+nya expr2 = (false == true);
 
-stdout write num;
+nya value1 = 9;
+nya value2 = 3;
+
+nya expr3 = (var::value1 < var::value2);
+
+nya res = (
+    "(true == !false) is " + "var::expr1" + "\n" +
+    "(false == true) is " + "var::expr2" + "\n" +
+    "(var::value1 < var::value2) is " + "var::expr3"
+);
+
+stdout write res;

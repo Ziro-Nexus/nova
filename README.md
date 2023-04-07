@@ -101,10 +101,10 @@ nya res = (
 stdout write res;
 
 ```
-```bash
-"(true == !false) is true
+```
+(true == !false) is true
 (false == true) is false
-(9 > 3) is true"
+(9 > 3) is true
 ```
 
 ### Soporte para variable shadowing ###
