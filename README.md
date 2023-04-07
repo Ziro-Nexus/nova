@@ -28,3 +28,35 @@ El motor de Nova es el módulo nova_interpreter. Se encarga de coordinar todo el
 - La función nova_engine::nova_engine::grammar_parser es responsable de leer el archivo de origen línea por línea y generar el AST correspondiente.
 - La función nova_engine::nova_engine::resolver se encarga de resolver todas las variables y logica de aplicación
 - La función nova_engine::nova_engine::_get_tree devuelve el AST generado.
+
+
+## Ejemplos funcionales 💪 ##
+
+### Suma de variables ###
+
+```csharp
+set a = 20;
+set b = 20;
+
+set res = (var::a + var::b);
+
+stdout write res;
+```
+```bash
+40
+```
+
+### Soporte de interpolación de datos en strings ###
+
+```csharp
+set a = 20;
+set b = 20;
+
+set res = (var::a + var::b);
+set res = ("Resultado: " + "var::res");
+
+stdout write res;
+```
+```bash
+"Resultado: 40"
+```

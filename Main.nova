@@ -2,5 +2,6 @@ set a = 20;
 set b = 20;
 
 set res = (var::a + var::b);
+set res = ("Resultado: " + "var::res");
 
 stdout write res;
