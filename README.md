@@ -55,10 +55,10 @@ El motor de Nova es el módulo nova_interpreter. Se encarga de coordinar todo el
 ### Suma de variables ###
 
 ```csharp
-set a = 20;
-set b = 20;
+nya a = 20;
+nya b = 20;
 
-set res = (var::a + var::b);
+nya res = (var::a + var::b);
 
 stdout write res;
 ```
@@ -69,11 +69,11 @@ stdout write res;
 ### Soporte de interpolación de datos en strings ###
 
 ```csharp
-set a = 20;
-set b = 20;
+nya a = 20;
+nya b = 20;
 
-set res = (var::a + var::b);
-set res = ("Resultado: " + "var::res");
+nya res = (var::a + var::b);
+nya res = ("Resultado: " + "var::res");
 
 stdout write res;
 ```
@@ -84,15 +84,15 @@ stdout write res;
 ### Soporte para expresiones booleanas y comparaciones numericas ###
 
 ```csharp
-set expr1 = (true == !false);
-set expr2 = (false == true);
+nya expr1 = (true == !false);
+nya expr2 = (false == true);
 
-set value1 = 9;
-set value2 = 3;
+nya value1 = 9;
+nya value2 = 3;
 
-set expr3 = (var::value1 > var::value2);
+nya expr3 = (var::value1 > var::value2);
 
-set res = (
+nya res = (
     "(true == !false) is " + "var::expr1" + "\n" +
     "(false == true) is " + "var::expr2" + "\n" +
     "(var::value1 > var::value2) is " + "var::expr3" + "\n"
