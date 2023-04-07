@@ -1,6 +1,7 @@
 ## Lenguaje Nova 🚀 ##
 
 Nova es un lenguaje de programación interpretado, con tipado dinamico y enfocado al scripting.
+![Nova logo](nova_logo.jpeg)
 
 <br>
 
