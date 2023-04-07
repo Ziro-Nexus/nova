@@ -106,3 +106,17 @@ stdout write res;
 (false == true) is false
 (9 > 3) is true"
 ```
+
+### Soporte para variable shadowing ###
+
+```csharp
+nya num = 20;
+nya num = (20 + var::num);
+nya num = (20 + var::num);
+nya num = (var::num * 2);
+
+stdout write num;
+```
+```bash
+120
+```
