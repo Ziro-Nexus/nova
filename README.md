@@ -1,29 +1,28 @@
-## Nova 🤖 ##
+## Lenguaje Nova 🚀 ##
 
-Nova es un intérprete basado en Rust para el lenguaje de programación nova. El intérprete utiliza las librerías syn y quote para generar un árbol de sintaxis abstracta (AST) para el código Zirox de entrada.
+Nova es un lenguaje de programación diseñado para ser simple y fácil de aprender, pero lo suficientemente poderoso como para crear aplicaciones complejas. Aquí se explica cómo funciona el código del intérprete Nova.
+Módulos 📦
 
-## Características 🚀 ##
-La versión actual de Zirox Translator puede:
+El intérprete Nova se divide en varios módulos, cada uno de los cuales maneja una parte específica del proceso de interpretación.
 
-- Analizar declaraciones de variables, como local num = 20.
-- Generar un AST utilizando AllocatorGrammar.
-- Usar la macro ast_tree! para generar un AST para una sola línea de código.
-- Usar la macro print_tree! para generar un AST para varias líneas de código y mostrarlas en la consola.
+- ast: contiene el generador del Árbol Sintáctico Abstracto (AST) del lenguaje Nova.
+- ast_macros: contiene las macros utilizadas para convertir el AST en código de Rust.
+- var_table: contiene la tabla de variables del intérprete.
+- nova_interpreter: contiene el motor de Nova que se encarga de interpretar el código.
 
-## Uso 📝 ##
-Para utilizar Nova, se puede ejecutar el binario nova y proporcionarle código Zirox para interpretar. Por ejemplo:
+## El AST 🌳 ##
 
-`$ echo "local num = 20;" | zirox_translator`
+El AST es una representación estructurada del código fuente. El módulo ast contiene el generador de AST del lenguaje Nova. Esto se hace mediante la creación de estructuras de datos que representan las diferentes construcciones sintácticas del lenguaje.
 
+- En ast_macros se implementan las macros necesarias para convertir estas estructuras de datos en código de Rust que pueda ser interpretado por la máquina.
+La Tabla de Variables 🗃️
 
-Esto generará un AST para el código de entrada y lo mostrará en la consola.
+- La tabla de variables es una estructura de datos que almacena todas las variables definidas en el programa. El módulo var_table contiene la implementación de esta tabla.
 
-## Trabajo futuro 🔮 ##
-Las futuras versiones cercanas de Zirox Translator planean implementar características adicionales, incluyendo:
+## El Motor de Nova 🚀 ##
 
-- Gramática de bucle.
-- Gramática condicional.
-- Gramática de función.
-- Crear tabla de simbolos para las variables
-- Crear analizador sintatico para encontrar posibles errores de sintaxys
-- Interpretar el AST
+El motor de Nova es el módulo nova_interpreter. Se encarga de coordinar todo el proceso de interpretación del código fuente.
+
+- La función nova_engine::nova_engine::grammar_parser es responsable de leer el archivo de origen línea por línea y generar el AST correspondiente.
+- La función nova_engine::nova_engine::resolver se encarga de resolver todas las variables en el AST y almacenarlas en la tabla de variables.
+- La función nova_engine::nova_engine::_get_tree devuelve el AST generado.
