@@ -75,6 +75,9 @@ impl NovaEngine {
         match &tree {
             TokenTree::Ident(e) => {
                 
+                // DEBUG
+                //println!("{:#?}", e);
+                
                 // creating a temportal vartable
                 let mut temporal_vartable = self.get_table().clone();
                 

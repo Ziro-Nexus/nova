@@ -1,4 +1,4 @@
-## Nova interprete 🚀 ##
+# Nova interprete 🚀 #
 
 ![Nova logo](nova_logo.jpeg)
 <br>
