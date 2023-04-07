@@ -22,7 +22,12 @@ El intérprete Nova se divide en varios módulos, cada uno de los cuales maneja 
 El AST es una representación estructurada del código fuente. El módulo ast contiene el generador de AST del lenguaje Nova. Esto se hace mediante la creación de estructuras de datos que representan las diferentes construcciones sintácticas del lenguaje.
 
 - En ast_macros se implementan las macros necesarias para convertir estas estructuras de datos en código de Rust que pueda ser interpretado por la máquina.
-La Tabla de Variables 🗃️
+
+
+<br>
+
+
+## La Tabla de Variables 🗃️ ##
 
 - La tabla de variables es una estructura de datos que almacena todas las variables definidas en el programa. El módulo var_table contiene la implementación de esta tabla.
 
