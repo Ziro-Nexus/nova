@@ -11,5 +11,3 @@ set res = (
     "(false == true) is " + "var::expr2" + "\n" +
     "(var::value1 > var::value2) is " + "var::expr3" + "\n"
 );
-
-stdout write res;
