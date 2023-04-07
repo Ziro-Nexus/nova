@@ -1,7 +1,9 @@
 ## Lenguaje Nova 🚀 ##
 
 Nova es un lenguaje de programación diseñado para ser simple y fácil de aprender, pero lo suficientemente poderoso como para crear aplicaciones complejas. Aquí se explica cómo funciona el código del intérprete Nova.
-Módulos 📦
+
+
+## Módulos 📦 ##
 
 El intérprete Nova se divide en varios módulos, cada uno de los cuales maneja una parte específica del proceso de interpretación.
 
@@ -24,5 +26,5 @@ La Tabla de Variables 🗃️
 El motor de Nova es el módulo nova_interpreter. Se encarga de coordinar todo el proceso de interpretación del código fuente.
 
 - La función nova_engine::nova_engine::grammar_parser es responsable de leer el archivo de origen línea por línea y generar el AST correspondiente.
-- La función nova_engine::nova_engine::resolver se encarga de resolver todas las variables en el AST y almacenarlas en la tabla de variables.
+- La función nova_engine::nova_engine::resolver se encarga de resolver todas las variables y logica de aplicación
 - La función nova_engine::nova_engine::_get_tree devuelve el AST generado.
