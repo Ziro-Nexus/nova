@@ -11,11 +11,14 @@ use nova_interpreter::nova_engine::NovaEngine;
 
 
 fn main() {
+    
     let mut nova_engine = NovaEngine::new(
         "Main.nova".to_owned(),
     );
+    
     nova_engine.grammar_parser();
-    nova_engine.resolve_idents().unwrap_or_else(|e| {
+
+    nova_engine.resolver().unwrap_or_else(|e| {
         eprintln!("{}", e)
     });
 }

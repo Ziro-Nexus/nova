@@ -24,7 +24,15 @@ impl VarTable{
     }
 }
 
-#[derive(Debug)]
+impl Clone for VarTable {
+    fn clone(&self) -> Self {
+        let cloned_map = self.symbols.clone();
+        VarTable { symbols: cloned_map }
+    }
+}
+
+
+#[derive(Debug, Clone)]
 pub enum Value {
     Integer(i64),
     Float(f64),
