@@ -77,3 +77,29 @@ stdout write res;
 ```bash
 "Resultado: 40"
 ```
+
+### Soporte para expresiones booleanas y comparaciones numericas ###
+
+```csharp
+set expr1 = (true == !false);
+set expr2 = (false == true);
+
+set value1 = 9;
+set value2 = 3;
+
+set expr3 = (var::value1 > var::value2);
+
+set res = (
+    "(true == !false) is " + "var::expr1" + "\n" +
+    "(false != true) is " + "var::expr2" + "\n" +
+    "(var::value1 > var::value2) is " + "var::expr3" + "\n"
+);
+
+stdout write res;
+
+```
+```bash
+"(true == !false) is true
+(false != true) is false
+(9 > 3) is true"
+```

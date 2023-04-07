@@ -17,6 +17,7 @@ fn main() {
     );
     
     nova_engine.grammar_parser();
+    
 
     nova_engine.resolver().unwrap_or_else(|e| {
         eprintln!("{}", e)

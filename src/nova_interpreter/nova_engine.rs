@@ -46,6 +46,7 @@ impl NovaEngine {
         let mut line_number = 1;
 
         for line in self.get_file_lines() {
+            
             // loading syntax tree for builtin functions
             // TODO: HANDLE ERRORS IN SINTAX
             let builtin_stdout_write = build_stdout_write_tree!(&line);
@@ -58,14 +59,16 @@ impl NovaEngine {
             
             // loading syntax tree for variable declaration
             // TODO: HANDLE ERRORS IN SINTAX
+            
             let declaration_tree = build_declaration_tree!(&line);
 
             if declaration_tree.is_ok() {
+                
                 self.syntax_tree.push(declaration_tree.clone().unwrap().into_token_stream());
                 line_number += 1;
                 continue;
             }
-
+            
             eprintln!("{line_number}. Error: Some errors ocurred:\n-{:?}\n-{:?}", declaration_tree.err(), builtin_stdout_write.err());
             line_number += 1;
         }
