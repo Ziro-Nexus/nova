@@ -1,6 +1,6 @@
 ## Lenguaje Nova 🚀 ##
 
-Nova es un lenguaje de programación diseñado para ser simple y fácil de aprender, pero lo suficientemente poderoso como para crear aplicaciones complejas. Aquí se explica cómo funciona el código del intérprete Nova.
+Nova es un lenguaje de programación interpretado, con tipado dinamico y enfocado al scripting.
 
 <br>
 
