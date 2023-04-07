@@ -3,7 +3,7 @@
 ![Nova logo](nova_logo.jpeg)
 <br>
 <br>
-### Nova es un lenguaje de programación interpretado escrito en Rust, con tipado dinamico y enfocado al scripting ###.
+### Nova es un lenguaje de programación interpretado escrito en Rust, con tipado dinamico y enfocado al scripting
 
 <br>
 
