@@ -103,6 +103,6 @@ stdout write res;
 ```
 ```bash
 "(true == !false) is true
-(false != true) is false
+(false == true) is false
 (9 > 3) is true"
 ```

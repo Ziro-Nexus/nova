@@ -8,7 +8,7 @@ set expr3 = (var::value1 > var::value2);
 
 set res = (
     "(true == !false) is " + "var::expr1" + "\n" +
-    "(false != true) is " + "var::expr2" + "\n" +
+    "(false == true) is " + "var::expr2" + "\n" +
     "(var::value1 > var::value2) is " + "var::expr3" + "\n"
 );
 
