@@ -3,6 +3,7 @@
 Nova es un lenguaje de programación diseñado para ser simple y fácil de aprender, pero lo suficientemente poderoso como para crear aplicaciones complejas. Aquí se explica cómo funciona el código del intérprete Nova.
 
 
+
 ## Módulos 📦 ##
 
 El intérprete Nova se divide en varios módulos, cada uno de los cuales maneja una parte específica del proceso de interpretación.
@@ -11,6 +12,8 @@ El intérprete Nova se divide en varios módulos, cada uno de los cuales maneja 
 - ast_macros: contiene las macros utilizadas para convertir el AST en código de Rust.
 - var_table: contiene la tabla de variables del intérprete.
 - nova_interpreter: contiene el motor de Nova que se encarga de interpretar el código.
+
+
 
 ## El AST 🌳 ##
 
@@ -21,6 +24,8 @@ La Tabla de Variables 🗃️
 
 - La tabla de variables es una estructura de datos que almacena todas las variables definidas en el programa. El módulo var_table contiene la implementación de esta tabla.
 
+
+
 ## El Motor de Nova 🚀 ##
 
 El motor de Nova es el módulo nova_interpreter. Se encarga de coordinar todo el proceso de interpretación del código fuente.
@@ -30,7 +35,11 @@ El motor de Nova es el módulo nova_interpreter. Se encarga de coordinar todo el
 - La función nova_engine::nova_engine::_get_tree devuelve el AST generado.
 
 
+
+
 ## Ejemplos funcionales 💪 ##
+
+
 
 ### Suma de variables ###
 
