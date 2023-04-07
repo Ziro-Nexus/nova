@@ -1,4 +1,4 @@
-## Lenguaje Nova 🚀 ##
+## Nova interprete 🚀 ##
 
 ![Nova logo](nova_logo.jpeg)
 <br>

@@ -1,18 +1,13 @@
-
-use std::borrow::BorrowMut;
-
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use proc_macro2::TokenTree;
 
 use super::super::var_table::vtable::VarTable;
-use super::declaration_matcher;
 use super::declaration_matcher::variable_matcher;
 
 use crate::build_declaration_tree;
 use crate::build_stdout_write_tree;
 
-use evalexpr;
 
 
 
