@@ -21,7 +21,7 @@ use super::custom_keys;
 // I want to create an Expr parser for example:
 // let var_name = "hello world";
 pub struct AllocatorGrammar {
-    let_sym : custom_keys::set,
+    let_sym : custom_keys::nya,
     var_name: syn::Ident,
     equal_sym: token::Eq,
     value: Expr,

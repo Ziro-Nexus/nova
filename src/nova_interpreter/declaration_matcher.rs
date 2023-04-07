@@ -12,7 +12,7 @@ use super::super::var_table::vtable::Value;
 // Create a matcher to handle the tokens of type Ident
 pub fn variable_matcher(e: &Ident, handler_stream: &TokenStream, tree: &TokenTree, vartable: &mut VarTable) {
     match e.to_string().as_str() {
-        "set" => {
+        "nya" => {
             let v = handler_stream.into_token_stream();
 
             let mut id = String::new();
@@ -71,9 +71,10 @@ pub fn variable_matcher(e: &Ident, handler_stream: &TokenStream, tree: &TokenTre
                                                 group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &i.to_string());
                                             },
                                             Value::Str(s) => {
-                                                //let s = format!("\"{}\"", s);
+                                                // if is a string, the variable value should be inside double quotes
+                                                let s = format!("\"{}\"", s);
 
-                                                group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &s.as_str());
+                                                group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &format!("{}", &s.as_str()));
                                             },
                                             // TODO: fix float values unexpected converted to integer values
                                             Value::Float(f) => {

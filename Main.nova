@@ -1,13 +1,15 @@
-set expr1 = (true == !false);
-set expr2 = (false == true);
+nya expr1 = (true == !false);
+nya expr2 = (false == true);
 
-set value1 = 9;
-set value2 = 3;
+nya value1 = 9;
+nya value2 = 3;
 
-set expr3 = (var::value1 > var::value2);
+nya expr3 = (var::value1 < var::value2);
 
-set res = (
+nya res = (
     "(true == !false) is " + "var::expr1" + "\n" +
     "(false == true) is " + "var::expr2" + "\n" +
-    "(var::value1 > var::value2) is " + "var::expr3" + "\n"
+    "(var::value1 < var::value2) is " + "var::expr3" + "\n"
 );
+
+stdout write res;

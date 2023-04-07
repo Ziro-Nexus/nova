@@ -1,6 +1,6 @@
 use syn;
 
-syn::custom_keyword!(set);
+syn::custom_keyword!(nya);
 
 
 
