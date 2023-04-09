@@ -6,6 +6,8 @@ use super::super::var_table::vtable::VarTable;
 use super::declaration_matcher::variable_matcher;
 
 use crate::build_declaration_tree;
+use crate::build_function_call_tree;
+use crate::build_integration_tree;
 use crate::build_stdout_write_tree;
 
 
@@ -41,6 +43,22 @@ impl NovaEngine {
         let mut line_number = 1;
 
         for line in self.get_file_lines() {
+
+
+            let integration_tree = build_integration_tree!(&line);
+            if integration_tree.is_ok() {
+                self.syntax_tree.push(integration_tree.clone().unwrap().into_token_stream());
+                line_number += 1;
+                continue;
+            }
+
+            let call_tree = build_function_call_tree!(&line);
+            if call_tree.is_ok() {
+                self.syntax_tree.push(call_tree.clone().unwrap().into_token_stream());
+                line_number += 1;
+                continue;
+            }
+
             
             // loading syntax tree for builtin functions
             // TODO: HANDLE ERRORS IN SINTAX
@@ -64,7 +82,13 @@ impl NovaEngine {
                 continue;
             }
             
-            eprintln!("{line_number}. Error: Some errors ocurred:\n-{:?}\n-{:?}", declaration_tree.err(), builtin_stdout_write.err());
+            eprintln!("{line_number}. Error: Some errors ocurred:\n-{:?}\n-{:?}\n{:?}\n{:?}", 
+                declaration_tree.err().unwrap(), 
+                builtin_stdout_write.err().unwrap(),
+                integration_tree.err().unwrap(),
+                call_tree.err().unwrap()
+            );
+            
             line_number += 1;
         }
     }
@@ -77,15 +101,22 @@ impl NovaEngine {
                 
                 // DEBUG
                 //println!("{:#?}", e);
+                let ident_str = e.to_string();
+                if ident_str.eq("nya") {
+                    println!("ident variable: {ident_str}");
                 
-                // creating a temportal vartable
-                let mut temporal_vartable = self.get_table().clone();
-                
-                variable_matcher(e, handler_stream, tree, &mut temporal_vartable); //cannot borrow data in a `&` reference as mutable
-                
-                // replacing the current var_table to the new var table
-                self.var_table = temporal_vartable.to_owned();
-            
+                    // creating a temportal vartable
+                    let mut temporal_vartable = self.get_table().clone();
+                    
+                    variable_matcher(e, handler_stream, tree, &mut temporal_vartable); //cannot borrow data in a `&` reference as mutable
+                    
+                    // replacing the current var_table to the new var table
+                    self.var_table = temporal_vartable.to_owned();
+                }
+                if ident_str.eq("stdout") {
+                    use super::builtin_std::std_write;
+                    std_write(handler_stream, self.get_table());
+                }
             },
             _ => ()
         }

@@ -1,15 +1,9 @@
-nya expr1 = (true == !false);
-nya expr2 = (false == true);
+integrate "stdio";
 
-nya value1 = 9;
-nya value2 = 3;
+nya a = 0.2;
+nya b = (var::a + 0.1);
 
-nya expr3 = (var::value1 < var::value2);
+nya b = ("Result: var::b");
 
-nya res = (
-    "(true == !false) is " + "var::expr1" + "\n" +
-    "(false == true) is " + "var::expr2" + "\n" +
-    "(var::value1 < var::value2) is " + "var::expr3"
-);
-
-stdout write res;
+print("var::b");
+stdout write b;

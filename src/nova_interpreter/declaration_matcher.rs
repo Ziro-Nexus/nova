@@ -1,7 +1,3 @@
-use std::borrow::BorrowMut;
-use std::ops::DerefMut;
-
-use evalexpr::eval_boolean;
 use proc_macro2::Ident;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
@@ -53,43 +49,7 @@ pub fn variable_matcher(e: &Ident, handler_stream: &TokenStream, tree: &TokenTre
                             // TODO: handle TokenTree::Group to parse full expressions
                             TokenTree::Group(g) => {
                                 // TODO: VERY IMPORTANT, HANDLE THE REMOVE OF WHITESPACES BEFORE EVAL
-                                let mut group_expr = g.to_string();
-
-                                // this handle the whitespace when passing variables. But i don't think is the best way to do it
-                                if group_expr.contains("var ::") {
-                                    group_expr = group_expr.replace(" ", "");
-                                }
-                                
-
-                                // TODO: HANDLE STRING INTERPOLATION:GROUP                                                        
-                                for x in vartable.get_vars() {
-                                    
-                                    if group_expr.contains(format!("var::{}", x.0).as_str()) {
-                                        
-                                        match x.1 {
-                                            Value::Integer(i) => {
-                                                group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &i.to_string());
-                                            },
-                                            Value::Str(s) => {
-                                                // if is a string, the variable value should be inside double quotes
-                                                let s = format!("\"{}\"", s);
-
-                                                group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &format!("{}", &s.as_str()));
-                                            },
-                                            // TODO: fix float values unexpected converted to integer values
-                                            Value::Float(f) => {
-                                                
-                                                group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &format!("{:.2}", f));
-                                            
-                                            },
-                                            Value::Boolean(b) => {
-                                                group_expr = group_expr.replace(format!("var::{}", x.0).as_str(), &b.to_string());
-                                            
-                                            },
-                                            _ => panic!("Error variable in expression")
-                                        }
-                                    }
-                                }
+                                let group_expr = vartable.parse_group_vars(g).unwrap();
                                 // DEBUG: GROUP OF EXPRESSIONS
                                 //println!("{group_expr}");
                                 //println!("{}", group_expr);
@@ -129,11 +89,6 @@ pub fn variable_matcher(e: &Ident, handler_stream: &TokenStream, tree: &TokenTre
                 // TODO: CONFIRM IS VAR NAME ALREADY EXIST, IN THAT CASE, PANIC
                 vartable.set(id, value);
             }
-        },
-        // TODO: CREATE AN EXTERNET FUNCTION TO HANDLE THIS BUILTIN FUNCTION
-        "stdout" => {
-            use super::builtin_std::std_write;
-            std_write(handler_stream, &vartable.clone());
         },
         _ => ()
     }

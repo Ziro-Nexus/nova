@@ -40,6 +40,22 @@ macro_rules! build_expr_tree {
     };
 }
 
+// macros for IntegrationGrammar
+#[macro_export]
+macro_rules! build_integration_tree {
+    ($x:expr) => {
+        crate::ast_generator::IntegrationGrammar::translate($x)
+    };
+}
+
+// macros for IntegrationGrammar
+#[macro_export]
+macro_rules! build_function_call_tree {
+    ($x:expr) => {
+        crate::ast_generator::FCallGrammar::translate($x)
+    };
+}
+
 
 // macros for builtin utilities
 #[macro_export]

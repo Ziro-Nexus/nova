@@ -18,7 +18,7 @@ fn main() {
     
     nova_engine.grammar_parser();
     
-
+    println!("{:#?}", nova_engine._get_tree());
     nova_engine.resolver().unwrap_or_else(|e| {
         eprintln!("{}", e)
     });
