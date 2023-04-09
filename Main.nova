@@ -1,9 +1,13 @@
-integrate "stdio";
+integrate "stdio@print/read";
 
 nya a = 0.2;
 nya b = (var::a + 0.1);
+nya b = ("Resultado: var::b\n");
 
-nya b = ("Result: var::b");
+nya hola_mundo = "Hola ";
+nya hola_mundo = (var::hola_mundo + "Mundo");
 
 print("var::b");
 stdout write b;
+stdout write hola_mundo;
+

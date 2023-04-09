@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Debug)]
 pub struct VarTable {
     pub symbols: HashMap<String, Value>,
 }
@@ -76,9 +77,18 @@ impl Clone for VarTable {
 
 #[derive(Debug, Clone)]
 pub enum Value {
+    // represent a 64 bytes rs integer
     Integer(i64),
+    // represent a 64 bytes rs float
     Float(f64),
+    // represent a boolean
     Boolean(bool),
+    // represent a heap allocated String
     Str(String),
+    // Module represent a third party or builtin Module to include
+    // EXAMPLE: MODULE ("stdio", ["print", "read", ...])
+    Module((String, Vec<String>)),
+    // represent a null value
+    // TODO: CREATE A HANDLER FOR NULL
     Null,
 }
