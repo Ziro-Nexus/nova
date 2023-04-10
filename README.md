@@ -59,7 +59,7 @@ integrate "stdio@print";
 
 print("Hola mundo!");
 ```
-```bash
+```
 Hola mundo!
 ```
 
