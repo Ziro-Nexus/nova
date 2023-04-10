@@ -158,7 +158,18 @@ impl NovaEngine {
 
                 // searching for modules integrated:
                 let modules = NovaModules::new();
-                modules.handle_module_calls(ident_str, self.get_table(), handler_stream.clone());
+                if let Ok(_mod_result) = modules.handle_module_calls(ident_str.clone(), self.get_table(), handler_stream.clone()) {
+                    //handle function return
+                    return;
+                } else {
+                    // if is not a Module, maybe a variable ?
+                     // searching for idents as variables, check if already has been initialized, if not, panic
+                    if let None = self.var_table.get(&ident_str) {
+                        panic!("unknown item: {}", &ident_str);
+                    }
+                }
+
+               
             }
             _ => (),
         }

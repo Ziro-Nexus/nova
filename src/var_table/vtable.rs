@@ -53,7 +53,7 @@ impl VarTable {
                     // TODO: fix float values unexpected converted to integer values
                     Value::Float(f) => {
                         group_expr = group_expr
-                            .replace(format!("var::{}", x.0).as_str(), &format!("{:.2}", f));
+                            .replace(format!("var::{}", x.0).as_str(), &format!("{}", f));
                     }
                     Value::Boolean(b) => {
                         group_expr =

@@ -3,25 +3,27 @@ use std::fmt::Display;
 
 use crate::var_table::{self, vtable::Value};
 
-pub fn nova_print_value(args: Vec<Value>) {
+pub fn nova_print_value(args: Vec<Value>) -> Result<Value, &'static str>{
     for arg in args.iter() {
         match arg {
             Value::Integer(e) => print!("{}", e),
             Value::Float(f) => print!("{:.2}", f),
             Value::Str(s) => print!("{}", s.to_string()),
             Value::Boolean(s) => print!("{}", s),
-            _ => (),
+            _ => eprintln!("Cannot parse value: {:?}", arg),
         }
     }
+    Ok(Value::Null)
 }
 
 pub struct NovaModules {
-    modules: Vec<(String, fn(Vec<Value>))>,
+    modules: Vec<(String, fn(Vec<Value>) -> Result<Value, &'static str>)>,
 }
 
 impl NovaModules {
     pub fn new() -> Self {
-        let modules = vec![("MOD<stdio>".to_owned(), nova_print_value as fn(Vec<_>))];
+        // modules attr of NovaModules receives a vector of (function name, function handler pointer)
+        let modules = vec![("MOD<stdio>".to_owned(), nova_print_value as fn(Vec<_>) -> Result<Value, &'static str>)];
 
         Self { modules }
     }
@@ -52,7 +54,7 @@ impl NovaModules {
         }
     }
 
-    pub fn get_modules(&self) -> &Vec<(String, fn(Vec<Value>))> {
+    pub fn get_modules(&self) -> &Vec<(String, fn(Vec<Value>) -> Result<Value, &'static str>)> {
         &self.modules
     }
 
@@ -62,8 +64,9 @@ impl NovaModules {
         ident_str: String,
         vartable: &var_table::vtable::VarTable,
         stream: TokenStream,
-    ) {
-        for module in self.get_modules() {
+    ) -> Result<Value, &'static str> {
+        let mut value_ret = Err("Failed parsing Function call");
+        'main_loop: for module in self.get_modules() {
             // check if some MOD<> is integrated into the vartable
             let table_option = vartable.get(&module.0);
             if table_option.is_some() {
@@ -110,7 +113,8 @@ impl NovaModules {
                                         parsed_args.push(value);
                                     }
                                 }
-                                module.1(parsed_args);
+                                value_ret = module.1(parsed_args);
+                                break 'main_loop;
                             }
                         }
                     }
@@ -118,5 +122,6 @@ impl NovaModules {
                 }
             }
         }
+        return value_ret;
     }
 }
