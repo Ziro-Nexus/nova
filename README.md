@@ -52,15 +52,28 @@ El motor de Nova es el módulo nova_interpreter. Se encarga de coordinar todo el
 
 ## Ejemplos funcionales 💪 ##
 
+### Hola mundo! ###
+
+```csharp
+integrate "stdio@print";
+
+print("Hola mundo!");
+```
+```bash
+Hola mundo!
+```
+
 ### Suma de variables ###
 
 ```csharp
-nya a = 20;
-nya b = 20;
+integrate "stdio@print";
 
-nya res = (var::a + var::b);
+init a = 20;
+init b = 20;
 
-stdout write res;
+init res = (var::a + var::b);
+
+print("var::res");
 ```
 ```bash
 40
@@ -69,13 +82,14 @@ stdout write res;
 ### Soporte de interpolación de datos en strings ###
 
 ```csharp
-nya a = 20;
-nya b = 20;
+integrate "stdio@print";
+init a = 20;
+init b = 20;
 
-nya res = (var::a + var::b);
-nya res = ("Resultado: " + "var::res");
+init res = (var::a + var::b);
+init res = ("Resultado: " + "var::res");
 
-stdout write res;
+print("var::res");
 ```
 ```bash
 "Resultado: 40"
@@ -84,21 +98,22 @@ stdout write res;
 ### Soporte para expresiones booleanas y comparaciones numericas ###
 
 ```csharp
-nya expr1 = (true == !false);
-nya expr2 = (false == true);
+integrate "stdio@print";
+init expr1 = (true == !false);
+init expr2 = (false == true);
 
-nya value1 = 9;
-nya value2 = 3;
+init value1 = 9;
+init value2 = 3;
 
-nya expr3 = (var::value1 > var::value2);
+init expr3 = (var::value1 > var::value2);
 
-nya res = (
+init res = (
     "(true == !false) is " + "var::expr1" + "\n" +
     "(false == true) is " + "var::expr2" + "\n" +
     "(var::value1 > var::value2) is " + "var::expr3" + "\n"
 );
 
-stdout write res;
+print("var::res");
 
 ```
 ```
@@ -110,12 +125,13 @@ stdout write res;
 ### Soporte para variable shadowing ###
 
 ```csharp
-nya num = 20;
-nya num = (20 + var::num);
-nya num = (20 + var::num);
-nya num = (var::num * 2);
+integrate "stdio@print";
+init num = 20;
+init num = (20 + var::num);
+init num = (20 + var::num);
+init num = (var::num * 2);
 
-stdout write num;
+print("var::num");
 ```
 ```bash
 120

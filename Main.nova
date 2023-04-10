@@ -1,14 +1,8 @@
 integrate "stdio@print";
 
-init nombre = "Andres";
-init apellido = "Mejia";
+init a = 20;
+init b = 20;
 
-init fecha_nacimiento = 1999;
-init fecha_actual = 2023;
+init res = (var::a + var::b);
 
-init edad = (var::fecha_actual - var::fecha_nacimiento);
-
-print(
-    "Usuario: var::nombre var::apellido\n",
-    "Edad: var::edad"
-);
+print("var::res");
