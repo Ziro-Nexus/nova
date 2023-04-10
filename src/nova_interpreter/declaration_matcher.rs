@@ -73,7 +73,7 @@ pub fn variable_matcher(
                     }
 
                     // TODO: handle var names in variable expressions: set age = <var>;
-                    _ => eprintln!("Error: parsing literal"),
+                    (e) => eprintln!("Error: parsing literal"),
                 }
             }
             _ => (),

@@ -1,13 +1,14 @@
-integrate "stdio@print/read";
+integrate "stdio@print";
 
-nya a = 0.2;
-nya b = (var::a + 0.1);
-nya b = ("Resultado: var::b\n");
+init nombre = "Andres";
+init apellido = "Mejia";
 
-nya hola_mundo = "Hola ";
-nya hola_mundo = (var::hola_mundo + "Mundo");
+init fecha_nacimiento = 1999;
+init fecha_actual = 2023;
 
-print("var::b");
-stdout write b;
-stdout write hola_mundo;
+init edad = (var::fecha_actual - var::fecha_nacimiento);
 
+print(
+    "Usuario: var::nombre var::apellido\n",
+    "Edad: var::edad"
+);

@@ -6,6 +6,7 @@ use quote::__private::ext::RepToTokensExt;
 
 use super::super::var_table::vtable::VarTable;
 use super::declaration_matcher::variable_matcher;
+use super::nova_modules::NovaModules;
 
 use crate::build_declaration_tree;
 use crate::build_function_call_tree;
@@ -30,6 +31,7 @@ impl NovaEngine {
         }
     }
 
+    
     pub fn get_table(&self) -> &VarTable {
         &self.var_table
     }
@@ -131,10 +133,11 @@ impl NovaEngine {
                             );
                             Some(())
                         });
+                    return;
                 }
 
                 // handle variables
-                if ident_str.eq("nya") {
+                if ident_str.eq("init") {
                     //println!("ident variable: {ident_str}");
 
                     // creating a temportal vartable
@@ -145,11 +148,17 @@ impl NovaEngine {
 
                     // replacing the current var_table to the new var table
                     //self.var_table = temporal_vartable.to_owned();
+                    return;
                 }
                 if ident_str.eq("stdout") {
                     use super::builtin_std::std_write;
                     std_write(handler_stream, self.get_table());
+                    return;
                 }
+
+                // searching for modules integrated:
+                let modules = NovaModules::new();
+                modules.handle_module_calls(ident_str, self.get_table(), handler_stream.clone());
             }
             _ => (),
         }

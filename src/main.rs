@@ -9,6 +9,12 @@ use nova_interpreter::nova_engine::NovaEngine;
 
 //use ast::token::Token;
 
+use nova_interpreter::nova_modules::NovaModules;
+
+fn main2() {
+    let _ = NovaModules::new();
+}
+
 
 fn main() {
     
@@ -18,8 +24,8 @@ fn main() {
     
     nova_engine.grammar_parser();
     
-    println!("generated tree:");
-    println!("{:#?}", nova_engine._get_tree());
+    //println!("generated tree:");
+    //println!("{:#?}", nova_engine._get_tree());
     
     println!("=================OUTPUT=====================");
     nova_engine.resolver().unwrap_or_else(|e| {
