@@ -26,6 +26,10 @@ pub fn variable_matcher(
                 // TODO: FIX LITERALS WITHOUT PARENTESIS LIKE: 2+2+2.
                 // TODO: FIX PASSING VARIABLES AS LITERALS
                 match el {
+                    TokenTree::Ident(i) => {
+                        println!("new ident detected for declaration {:?} : full stream: {}", i, handler_stream);
+                        unimplemented!("parsing declaration values as Idents");
+                    },
                     TokenTree::Literal(lit) => {
                         if let Ok(e) = lit.to_string().parse::<i64>() {
                             value = Value::Integer(e);
@@ -50,7 +54,7 @@ pub fn variable_matcher(
                         // TODO: VERY IMPORTANT, HANDLE THE REMOVE OF WHITESPACES BEFORE EVAL
                         let group_expr = vartable.parse_group_vars(g).unwrap();
                         // DEBUG: GROUP OF EXPRESSIONS
-                        //println!("{group_expr}");
+                        println!("{group_expr}");
                         //println!("{}", group_expr);
 
                         let eval_result = evalexpr::eval(&group_expr.replace("\\n", "\n"));

@@ -1,8 +1,6 @@
 integrate "stdio@print";
 
-init a = 2.25;
-init b = 20;
+init a = 20;
+init b = ({a}+ 2);
 
-init res = (var::a + var::b);
 
-print("var::res");
