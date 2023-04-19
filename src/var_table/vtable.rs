@@ -26,7 +26,7 @@ impl VarTable {
 
     pub fn parse_string_vars(&self, val: String) -> Result<String, &'static str> {
         let mut group_expr = val.to_owned();
-        println!("{group_expr}");
+        //println!("{group_expr}");
 
         // this handle the whitespace when passing variables. But i don't think is the best way to do it
         if group_expr.contains("var ::") {

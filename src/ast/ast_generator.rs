@@ -116,7 +116,7 @@ impl ExprGrammar {
 
 
 pub struct IntegrationGrammar {
-    integration_key: custom_keys::integrate,
+    integration_key: custom_keys::include,
     module_path:  syn::LitStr,
     span: Span
 }

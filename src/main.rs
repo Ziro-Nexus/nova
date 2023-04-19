@@ -10,7 +10,7 @@ use nova_interpreter::nova_engine::NovaEngine;
 
 use nova_interpreter::nova_modules::NovaModules;
 
-fn main() {
+fn main2() {
     let enbracked_variables: Vec<String> = "El error se ha cometido en: {err} por culpa de la siguiente funcion {f}"
         .to_owned()
         .split("{")
@@ -19,11 +19,11 @@ fn main() {
         .collect();
     let enbracked_variables = enbracked_variables[1..].to_vec();
     // imprime: ["var1", "var2", "var3", "var4"]
-    println!("{{{v}}}", v = 1);
+    println!("{:?}", enbracked_variables);
     
 }
 
-fn main2() {
+fn main() {
     let mut nova_engine = NovaEngine::new("Main.nova".to_owned());
 
     nova_engine.grammar_parser();

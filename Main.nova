@@ -1,6 +1,10 @@
-integrate "stdio@print";
+include "stdio@print";
 
-init a = 20;
-init b = ({a}+ 2);
+init a = 10;
+init b = a + 10;
+init c = a + b + 10;
+init d = (a + b + (c + 10));
+init f = d - 70 * 2;
 
 
+print("Resultado: var::d");

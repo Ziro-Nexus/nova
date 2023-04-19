@@ -105,7 +105,7 @@ impl NovaEngine {
                 //println!("{:#?}", e);
 
                 // handle including modules
-                if ident_str.eq("integrate") {
+                if ident_str.eq("include") {
                     let handler_stream_copy = handler_stream.clone();
                     handler_stream_copy
                         .into_iter()
@@ -144,6 +144,7 @@ impl NovaEngine {
                     //let mut temporal_vartable = self.get_table().clone();
 
                     variable_matcher(e, handler_stream, tree, &mut self.var_table);
+                    
                     //cannot borrow data in a `&` reference as mutable
 
                     // replacing the current var_table to the new var table
@@ -156,6 +157,8 @@ impl NovaEngine {
                     return;
                 }
 
+
+
                 // searching for modules integrated:
                 let modules = NovaModules::new();
                 if let Ok(_mod_result) = modules.handle_module_calls(ident_str.clone(), self.get_table(), handler_stream.clone()) {
@@ -165,7 +168,7 @@ impl NovaEngine {
                     // if is not a Module, maybe a variable ?
                      // searching for idents as variables, check if already has been initialized, if not, panic
                     if let None = self.var_table.get(&ident_str) {
-                        panic!("unknown item: {}", &ident_str);
+                        
                     }
                 }
 

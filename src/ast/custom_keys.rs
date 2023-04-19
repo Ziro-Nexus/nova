@@ -4,7 +4,7 @@ use syn;
 /* builtin keys */
 
 syn::custom_keyword!(init);
-syn::custom_keyword!(integrate);
+syn::custom_keyword!(include);
 
 
 
