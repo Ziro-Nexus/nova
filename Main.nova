@@ -1,15 +1,14 @@
 include "stdio@print";
 
-init numero1 = 20;
-init numero2 = 40;
+init str1 = "Andres";
+init str2 = "Andres Camilo";
 
-init suma = numero1 + numero2;
-init resta = numero1 - numero2;
-init multiplicacion = numero1 + numero2;
-init division = numero1 + numero2;
+init iguales = ([str1] == [str2]);
+init mayor = ([str1] > [str2]);
+init menor = ([str1] < [str2]);
 
-
-init eval = ([multiplicacion] > [division]);
-init second_eval = ([suma] > [resta]);
-
-print("[eval]");
+print(
+    "str1 y str2 son iguales: [iguales] \n",
+    "str1 es mayor a str2: [mayor] \n",
+    "str1 es menor a str2: [menor]"
+);

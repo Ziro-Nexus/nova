@@ -43,7 +43,7 @@ pub fn variable_matcher(
                                 
                                 group_expr = match var.1 {
                                     Value::Integer(i) => {
-                                        println!("{group_expr}"); // group_expr is a string = "({ a } == { false })"
+                                        //println!("{group_expr}"); // group_expr is a string = "({ a } == { false })"
                                         group_expr = group_expr.replace(format!("[{}]", var.0).as_str(), &i.to_string());
                                         group_expr = group_expr.replace("{", "");
                                         group_expr.replace("}", "")
@@ -59,6 +59,11 @@ pub fn variable_matcher(
                                         group_expr.replace("}", "")
                                     }
                                     Value::Str(s) => {
+                                        //println!("entry str: {s}");
+                                        // giving quotes to tring types
+                                        let s  = format!("{}\"", s);
+                                        let s  = format!("\"{}", s);
+                                        //println!("parsed str: {s}");
                                         group_expr = group_expr.replace(format!("[{}]", var.0).as_str(), &s.to_string());
                                         group_expr = group_expr.replace("{", "");
                                         group_expr.replace("}", "")
@@ -70,10 +75,10 @@ pub fn variable_matcher(
 
                         // DEBUG: GROUP OF EXPRESSIONS
                         //println!("{group_expr}");
-                        println!("DEBUG WARNING: {}", group_expr);
+                        //println!("DEBUG WARNING: {}", group_expr);
                         group_expr = group_expr.replace("{", "");
                         group_expr = group_expr.replace("}", "");
-                        println!("DEBUG WARNING: {}", group_expr);
+                        //println!("DEBUG WARNING: {}", group_expr);
 
                         let eval_result = evalexpr::eval(&group_expr.replace("\\n", "\n"));
 
@@ -120,7 +125,6 @@ pub fn variable_matcher(
                         for tok in token_list.iter() {
                             let tok_copy = tok.clone();
 
-                            println!("tok: {}", tok_copy);
 
                             // FIX "=="" HANDLER
                             if tok.to_string().eq("=") {

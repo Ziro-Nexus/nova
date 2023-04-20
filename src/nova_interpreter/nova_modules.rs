@@ -85,8 +85,9 @@ impl NovaModules {
                                         // parse variable interpolation
                                         match value_copy {
                                             Value::Str(e) => {
-                                                println!("module value : {e}");
-                                                if e.contains("var::") {
+                                                
+                                                if e.contains('[') && e.contains(']') {
+                                                    //println!("module value : {e}");
                                                     let _g = syn::parse_str::<Group>(&format!(
                                                         "({})",
                                                         e
