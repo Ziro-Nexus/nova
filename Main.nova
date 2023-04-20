@@ -1,10 +1,15 @@
 include "stdio@print";
 
-init a = 10;
-init b = a + 10;
-init c = a + b + 10;
-init d = (a + b + (c + 10));
-init f = d - 70 * 2;
+init numero1 = 20;
+init numero2 = 40;
+
+init suma = numero1 + numero2;
+init resta = numero1 - numero2;
+init multiplicacion = numero1 + numero2;
+init division = numero1 + numero2;
 
 
-print("Resultado: var::d");
+init eval = ([multiplicacion] > [division]);
+init second_eval = ([suma] > [resta]);
+
+print("[eval]");

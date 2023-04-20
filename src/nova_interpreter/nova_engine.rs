@@ -23,7 +23,9 @@ pub struct NovaEngine {
 impl NovaEngine {
     pub fn new(filepath: String) -> Self {
         let syntax_tree = Vec::new();
-        let var_table = VarTable::new();
+        let mut var_table = VarTable::new();
+        var_table.set("true".to_owned(), Value::Boolean(true));
+        var_table.set("false".to_owned(), Value::Boolean(false));
         Self {
             filepath,
             var_table,
