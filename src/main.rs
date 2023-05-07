@@ -24,7 +24,7 @@ fn main2() {
 }
 
 fn main() {
-    let mut nova_engine = NovaEngine::new("Main.nova".to_owned());
+    let mut nova_engine = NovaEngine::new("Main.⚡".to_owned());
 
     nova_engine.grammar_parser();
 

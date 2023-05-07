@@ -1,4 +1,5 @@
 PENDIENTE:
+    - ARREGLAR PASAR VARIABLE PARA condicional por ejemplo: init x = y == 20;
     - TERMINAR DE ARREGLAR EL LLAMADO DE FUNCIONES EN LAS DECLARACIONES DE VARIABLES (ENFOCARSE EN LOS ARGUMENTOS DE LAS FUNCIONES)
     - Arreglar nova_modules para definir de forma correcta el tipo de dato del ARGUMENTOS
     

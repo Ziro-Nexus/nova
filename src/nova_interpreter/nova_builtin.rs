@@ -43,3 +43,21 @@ pub fn math_sum(args: Vec<Value>) -> Result<Value, &'static str>{
     Ok(Value::Integer(val1.wrapping_add(val2)))
 }
 
+pub fn math_is_positive(args: Vec<Value>) -> Result<Value, &'static str>{
+    
+    let posx = &args[0];
+
+    let val1: i64;
+
+    match posx {
+        Value::Integer(e) => val1 = *e,
+        Value::Float(_) => panic!("float is not valid for this function"),
+        Value::Str(s) => panic!("string is not valid for this function"),
+        Value::Boolean(_) => panic!("bool is not valid for this function"),
+        _ => panic!("invalid value"),
+    }
+
+   // println!("args of sum: {args:?}");
+    Ok(Value::Boolean(val1.is_positive()))
+}
+

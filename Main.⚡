@@ -1,0 +1,8 @@
+include "std_print@print";
+include "math_sum@sum";
+include "math_is_positive@is_positive";
+
+init big_number = 23424234234;
+init res = sum(big_number, 1) > big_number && is_positive(big_number);
+
+print("conditional result: [res]");

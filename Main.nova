@@ -1,8 +1,0 @@
-include "std_print@print";
-include "math_sum@sum";
-
-init suma1 = 1;
-init suma2 = sum(25, 25);
-
-
-print("[suma2]")

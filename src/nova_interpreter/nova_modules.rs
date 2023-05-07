@@ -2,8 +2,11 @@ use proc_macro2::{Group, TokenStream, TokenTree};
 use std::{fmt::Display, error::Error, io::ErrorKind};
 
 use crate::var_table::{self, vtable::Value};
+
+// importing nova builtin
 use super::nova_builtin::std_print;
 use super::nova_builtin::math_sum;
+use super::nova_builtin::math_is_positive;
 
 
 pub struct NovaModules {
@@ -15,7 +18,8 @@ impl NovaModules {
         // modules attr of NovaModules receives a vector of (function name, function handler pointer)
         let modules = vec![
             ("MOD<std_print>".to_owned(), std_print as fn(Vec<_>) -> Result<Value, &'static str>),
-            ("MOD<math_sum>".to_owned(), math_sum as fn(Vec<_>) -> Result<Value, &'static str>)
+            ("MOD<math_sum>".to_owned(), math_sum as fn(Vec<_>) -> Result<Value, &'static str>),
+            ("MOD<math_is_positive>".to_owned(), math_is_positive as fn(Vec<_>) -> Result<Value, &'static str>)
         ];
 
         Self { modules }
@@ -26,7 +30,7 @@ impl NovaModules {
         unimplemented!()
     }
 
-    pub fn novautil_literal_to_values(el: &TokenTree, v: &mut Vec<Value>) -> Result<Value, &'static str> {
+    pub fn novautil_literal_to_values(el: &TokenTree, v: &mut Vec<Value>, vartable: &var_table::vtable::VarTable) -> Result<Value, &'static str> {
         let mut value = Value::Null;
         match el {
             TokenTree::Literal(lit) => {
@@ -49,6 +53,8 @@ impl NovaModules {
                 Ok(value)
             }
             TokenTree::Group(g) => {
+                
+
                 let items: Vec<String> = g.to_string().replace("(", "")
                     .replace(")", "")
                     .replace(" ", "")
@@ -56,7 +62,15 @@ impl NovaModules {
                     .map(|s| s.to_owned())
                     .collect();
                 
-                for item in items {
+                'main_mp: for item in items {
+                    
+                    for var in vartable.get_vars() {
+                        if item.eq(var.0) {
+                            v.push(var.1.clone());
+                            continue 'main_mp;
+                        }
+                    }
+
                     let try_num = item.parse::<i64>();
                     let try_float = item.parse::<f64>();
                     let try_bool = item.parse::<bool>();
@@ -68,9 +82,6 @@ impl NovaModules {
                             if try_bool.is_ok() {v.push(Value::Boolean(try_bool.unwrap()))}
                         }
                     }
-                    
-                    
-
                 }
                 return Ok(Value::Null)
             },
@@ -110,8 +121,8 @@ impl NovaModules {
                                         TokenTree::Ident(i) => println!("ident to handle: {}", i.to_string()),
                                         _ => ()
                                     }*/
-                                    let value = NovaModules::novautil_literal_to_values(&v.clone(), &mut parsed_args);
-                                    
+                                    let value = NovaModules::novautil_literal_to_values(&v.clone(), &mut parsed_args, vartable);
+                                   
                                     
                                     if value.is_ok() {
                                            
