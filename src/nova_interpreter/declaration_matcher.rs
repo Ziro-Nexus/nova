@@ -33,38 +33,52 @@ pub fn variable_matcher(
                 match el {
                     // TODO: handle TokenTree::Group to parse full expressions
                     TokenTree::Group(g) => {
+                        //println!("group triggered {g:?}");
                         // TODO: VERY IMPORTANT, HANDLE THE REMOVE OF WHITESPACES BEFORE EVAL
                         let mut group_expr = g.to_string().to_owned();
 
                         for var in vartable.get_vars() {
                             //println!("URGENT DEBUG. FIX BAD VARIABLE RESOLVING: {group_expr} : {}", var.0);
-                            
-                            if g.to_string().contains(format!("[{}]", var.0.as_str()).as_str()) {
-                                
+
+                            if g.to_string()
+                                .contains(format!("[{}]", var.0.as_str()).as_str())
+                            {
                                 group_expr = match var.1 {
                                     Value::Integer(i) => {
                                         //println!("{group_expr}"); // group_expr is a string = "({ a } == { false })"
-                                        group_expr = group_expr.replace(format!("[{}]", var.0).as_str(), &i.to_string());
+                                        group_expr = group_expr.replace(
+                                            format!("[{}]", var.0).as_str(),
+                                            &i.to_string(),
+                                        );
                                         group_expr = group_expr.replace("{", "");
                                         group_expr.replace("}", "")
                                     }
                                     Value::Float(f) => {
-                                        group_expr = group_expr.replace(format!("[{}]", var.0).as_str(), &f.to_string());
+                                        group_expr = group_expr.replace(
+                                            format!("[{}]", var.0).as_str(),
+                                            &f.to_string(),
+                                        );
                                         group_expr = group_expr.replace("{", "");
                                         group_expr.replace("}", "")
                                     }
                                     Value::Boolean(b) => {
-                                        group_expr = group_expr.replace(format!("[{}]", var.0).as_str(), &b.to_string());
+                                        group_expr = group_expr.replace(
+                                            format!("[{}]", var.0).as_str(),
+                                            &b.to_string(),
+                                        );
                                         group_expr = group_expr.replace("{", "");
                                         group_expr.replace("}", "")
                                     }
                                     Value::Str(s) => {
                                         //println!("entry str: {s}");
                                         // giving quotes to tring types
-                                        let s  = format!("{}\"", s);
-                                        let s  = format!("\"{}", s);
+                                        let s = format!("{}\"", s);
+                                        let s = format!("\"{}", s);
                                         //println!("parsed str: {s}");
-                                        group_expr = group_expr.replace(format!("[{}]", var.0).as_str(), &s.to_string());
+                                        group_expr = group_expr.replace(
+                                            format!("[{}]", var.0).as_str(),
+                                            &s.to_string(),
+                                        );
                                         group_expr = group_expr.replace("{", "");
                                         group_expr.replace("}", "")
                                     }
@@ -94,7 +108,7 @@ pub fn variable_matcher(
                                 evalexpr::Value::String(s) => value = Value::Str(s),
                                 evalexpr::Value::Float(f) => value = Value::Float(f),
                                 evalexpr::Value::Boolean(f) => value = Value::Boolean(f),
-                                _ => eprintln!("error parsing expression"),
+                                _ => (),
                             }
                         }
                     }
@@ -107,7 +121,7 @@ pub fn variable_matcher(
 
                         for tok in cp_stream {
                             let match_copy = tok.clone();
-                            
+
                             match match_copy {
                                 TokenTree::Group(_) => (),
                                 TokenTree::Ident(i) => {
@@ -119,12 +133,12 @@ pub fn variable_matcher(
                                 TokenTree::Literal(_) => token_list.push(tok),
                             }
                         }
-                        
+
                         id = token_list[0].to_string();
+                        let modules = NovaModules::new();
 
                         for tok in token_list.iter() {
                             let tok_copy = tok.clone();
-
 
                             // FIX "=="" HANDLER
                             if tok.to_string().eq("=") {
@@ -136,8 +150,18 @@ pub fn variable_matcher(
                             match tok {
                                 TokenTree::Group(_) => todo!(),
                                 TokenTree::Ident(i) => {
+                                    
+                                    if let Ok(_mod_result) = modules.handle_module_calls(
+                                        i.to_string(),
+                                        &vartable,
+                                        handler_stream.clone(),
+                                    ) {
+                                        //handle function return
+                                        //println!("Result: {_mod_result:?}");
+                                        resolved_tokens.push(_mod_result);
+                                        continue;
+                                    }
                                     for var in vartable.get_vars() {
-                                       
                                         if var.0.eq(&i.to_string()) {
                                             resolved_tokens.push(var.1.clone());
                                         }
@@ -146,8 +170,10 @@ pub fn variable_matcher(
                                 TokenTree::Punct(p) => {
                                     resolved_tokens.push(Value::Str(p.to_string()))
                                 }
-                                TokenTree::Literal(_) => resolved_tokens
-                                    .push(NovaModules::novautil_literal_to_values(tok).unwrap()),
+                                TokenTree::Literal(_) => resolved_tokens.push(
+                                    NovaModules::novautil_literal_to_values(tok, &mut Vec::new())
+                                        .unwrap(),
+                                ),
                             }
                         }
 
@@ -175,33 +201,25 @@ pub fn variable_matcher(
                             }
                         }
 
-                        
                         let idx = str_expr.char_indices().nth(1).unwrap_or_else(|| {
-                            let modules = NovaModules::new();
-                            if let Ok(_mod_result) = modules.handle_module_calls(generic_val.to_string(), &vartable, handler_stream.clone()) {
-                                //handle function return
-                                println!("Result: {_mod_result:?}");
-                                (0, '1')
-                            } else { 
-                                (0, '1')
-                            }
+                            panic!("EEROR PARSING IDX");
                         });
 
-                        println!("{:?}", idx);
+                        //println!("{:?}", idx);
 
                         // parsing string literals
                         if !str_expr.ends_with("\"") && idx.1.eq(&'"') {
                             //println!("wow{}", str_expr);
                             str_expr = format!("{}\"", str_expr);
-                           // println!("{}", str_expr);
-                            
+                            // println!("{}", str_expr);
                         } else {
                             str_expr = str_expr.replace('"', "").to_owned();
-                            //println!("this: {}", str_expr);
+                            //println!("this: {}", str_expr);println!
                         }
                         str_expr.push(')');
-                        
-                        
+
+                        println!("evaluation str: {str_expr}");
+
                         let evaluated = evalexpr::eval(&str_expr)
                             .unwrap_or_else(|e| panic!("{}", e.to_string()));
 

@@ -1,5 +1,5 @@
 use proc_macro2::{Group, TokenStream, TokenTree};
-use std::fmt::Display;
+use std::{fmt::Display, error::Error, io::ErrorKind};
 
 use crate::var_table::{self, vtable::Value};
 
@@ -19,11 +19,12 @@ pub fn nova_print_value(args: Vec<Value>) -> Result<Value, &'static str>{
 pub fn nova_sum_value(args: Vec<Value>) -> Result<Value, &'static str>{
     
     let posx = &args[0];
-    println!("{posx:?}");
+
     let posy = &args[1];
 
     let val1: i64;
     let val2: i64;
+
 
     match posx {
         Value::Integer(e) => val1 = *e,
@@ -64,7 +65,7 @@ impl NovaModules {
         unimplemented!()
     }
 
-    pub fn novautil_literal_to_values(el: &TokenTree) -> Result<Value, &'static str> {
+    pub fn novautil_literal_to_values(el: &TokenTree, v: &mut Vec<Value>) -> Result<Value, &'static str> {
         let mut value = Value::Null;
         match el {
             TokenTree::Literal(lit) => {
@@ -86,6 +87,32 @@ impl NovaModules {
                 }
                 Ok(value)
             }
+            TokenTree::Group(g) => {
+                let items: Vec<String> = g.to_string().replace("(", "")
+                    .replace(")", "")
+                    .replace(" ", "")
+                    .split(",")
+                    .map(|s| s.to_owned())
+                    .collect();
+                
+                for item in items {
+                    let try_num = item.parse::<i64>();
+                    let try_float = item.parse::<f64>();
+                    let try_bool = item.parse::<bool>();
+
+                    if try_num.is_ok() {v.push(Value::Integer(try_num.unwrap()))}
+                    else {
+                        if try_float.is_ok() {v.push(Value::Float(try_float.unwrap()))}
+                        else {
+                            if try_bool.is_ok() {v.push(Value::Boolean(try_bool.unwrap()))}
+                        }
+                    }
+                    
+                    
+
+                }
+                return Ok(Value::Null)
+            },
             _ => Err("Error parsing literal"),
         }
     }
@@ -116,9 +143,12 @@ impl NovaModules {
                             if included_function.eq(&ident_str) {
                                 let mut parsed_args: Vec<Value> = Vec::new();
                                 for v in stream.clone().into_iter() {
-                                    let value = NovaModules::novautil_literal_to_values(&v.clone());
+                                    
+                                    let value = NovaModules::novautil_literal_to_values(&v.clone(), &mut parsed_args);
+                                    
                                     
                                     if value.is_ok() {
+                                        
                                         let mut value = value.unwrap();
                                         let value_copy = value.clone();
                                         
