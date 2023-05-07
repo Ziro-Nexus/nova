@@ -1,2 +1,4 @@
-- Create a matcher for ast::generator::IntegrationGrammar to handle into nova_engine to found modules and functions to integrate in the code
-- Create a matcher for ast::generator::FCallGrammar to handle into nova_engine to parse functions calls
+PENDIENTE:
+    - TERMINAR DE ARREGLAR EL LLAMADO DE FUNCIONES EN LAS DECLARACIONES DE VARIABLES (ENFOCARSE EN LOS ARGUMENTOS DE LAS FUNCIONES)
+    - Arreglar nova_modules para definir de forma correcta el tipo de dato del ARGUMENTOS
+    
