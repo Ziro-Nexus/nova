@@ -2,48 +2,9 @@ use proc_macro2::{Group, TokenStream, TokenTree};
 use std::{fmt::Display, error::Error, io::ErrorKind};
 
 use crate::var_table::{self, vtable::Value};
+use super::nova_builtin::std_print;
+use super::nova_builtin::math_sum;
 
-pub fn nova_print_value(args: Vec<Value>) -> Result<Value, &'static str>{
-    for arg in args.iter() {
-        match arg {
-            Value::Integer(e) => print!("{}", e),
-            Value::Float(f) => print!("{:.2}", f),
-            Value::Str(s) => print!("{}", s.to_string()),
-            Value::Boolean(s) => print!("{}", s),
-            _ => eprintln!("Cannot parse value: {:?}", arg),
-        }
-    }
-    Ok(Value::Null)
-}
-
-pub fn nova_sum_value(args: Vec<Value>) -> Result<Value, &'static str>{
-    
-    let posx = &args[0];
-
-    let posy = &args[1];
-
-    let val1: i64;
-    let val2: i64;
-
-
-    match posx {
-        Value::Integer(e) => val1 = *e,
-        Value::Float(_) => panic!("float is not valid for this function"),
-        Value::Str(_) => panic!("string is not valid for this function"),
-        Value::Boolean(_) => panic!("bool is not valid for this function"),
-        _ => panic!("invalid value"),
-    }
-
-    match posy {
-        Value::Integer(e) => val2 = *e,
-        Value::Float(_) => panic!("float is not valid for this function"),
-        Value::Str(_) => panic!("string is not valid for this function"),
-        Value::Boolean(_) => panic!("bool is not valid for this function"),
-        _ => panic!("invalid value"),
-    }
-
-    Ok(Value::Integer(val1.wrapping_add(val2)))
-}
 
 pub struct NovaModules {
     modules: Vec<(String, fn(Vec<Value>) -> Result<Value, &'static str>)>,
@@ -53,8 +14,8 @@ impl NovaModules {
     pub fn new() -> Self {
         // modules attr of NovaModules receives a vector of (function name, function handler pointer)
         let modules = vec![
-            ("MOD<nova_print>".to_owned(), nova_print_value as fn(Vec<_>) -> Result<Value, &'static str>),
-            ("MOD<nova_sum>".to_owned(), nova_sum_value as fn(Vec<_>) -> Result<Value, &'static str>)
+            ("MOD<std_print>".to_owned(), std_print as fn(Vec<_>) -> Result<Value, &'static str>),
+            ("MOD<math_sum>".to_owned(), math_sum as fn(Vec<_>) -> Result<Value, &'static str>)
         ];
 
         Self { modules }
@@ -144,11 +105,16 @@ impl NovaModules {
                                 let mut parsed_args: Vec<Value> = Vec::new();
                                 for v in stream.clone().into_iter() {
                                     
+                                    /* DEBUG: match v.clone() {
+                                        TokenTree::Group(g) => println!("group to handle: {}", g.to_string()),
+                                        TokenTree::Ident(i) => println!("ident to handle: {}", i.to_string()),
+                                        _ => ()
+                                    }*/
                                     let value = NovaModules::novautil_literal_to_values(&v.clone(), &mut parsed_args);
                                     
                                     
                                     if value.is_ok() {
-                                        
+                                           
                                         let mut value = value.unwrap();
                                         let value_copy = value.clone();
                                         
@@ -175,15 +141,17 @@ impl NovaModules {
                                                     resolved_value =
                                                         resolved_value.replace("\"", "");
 
-                                                    value = Value::Str(resolved_value);
+                                                        
+
+                                                    parsed_args.push(Value::Str(resolved_value));
                                                 }
                                             }
-                                            Value::Float(f) => value = Value::Float(f),
+                                            Value::Float(f) => parsed_args.push(Value::Float(f)),
                                             _ => (),
                                         }
 
                                         //println!("New argument of {} with value: {:?} is being parsed", included_function, value);
-                                        parsed_args.push(value);
+                                        //parsed_args.push(value);
                                     }
                                 }
                                 value_ret = module.1(parsed_args);

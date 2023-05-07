@@ -218,7 +218,7 @@ pub fn variable_matcher(
                         }
                         str_expr.push(')');
 
-                        println!("evaluation str: {str_expr}");
+                        //println!("evaluation str: {str_expr}");
 
                         let evaluated = evalexpr::eval(&str_expr)
                             .unwrap_or_else(|e| panic!("{}", e.to_string()));

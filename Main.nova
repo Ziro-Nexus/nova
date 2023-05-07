@@ -1,7 +1,11 @@
-include "nova_print@put";
-include "nova_sum@sum";
+include "std_print@print";
+include "math_sum@sum";
 
-init n1 = sum(25, 25) + sum(25 + 25) + 2;
+init n1 = 1 + sum(25, 25) + sum(25 + 25);
+init n2 = sum(25, 25) + sum(25 + 25) + 2;
+init n3 = sum(25, 25) + 3 + sum(25 + 25);
 
-put("[n1]");
+init s = "Hola";
+init ss = " Mundo"
 
+print("[n1] - [n2] - [n3] - [nn]");

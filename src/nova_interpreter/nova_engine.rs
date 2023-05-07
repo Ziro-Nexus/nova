@@ -165,7 +165,7 @@ impl NovaEngine {
                 let modules = NovaModules::new();
                 if let Ok(_mod_result) = modules.handle_module_calls(ident_str.clone(), self.get_table(), handler_stream.clone()) {
                     //handle function return
-                    println!("\n\nMOD INFO: {}() returned {:?}", ident_str, _mod_result);
+                    //println!("\n\nMOD INFO: {}() returned {:?}", ident_str, _mod_result);
                     return;
                 } else {
                     // if is not a Module, maybe a variable ?
