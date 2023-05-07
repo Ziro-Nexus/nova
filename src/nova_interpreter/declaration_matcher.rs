@@ -100,7 +100,7 @@ pub fn variable_matcher(
                     }
 
                     // TODO: handle var names in variable expressions: set age = <var>;
-                    _ => {
+                    (generic_val) => {
                         let cp_stream = handler_stream.clone();
                         let mut token_list: Vec<TokenTree> = Vec::new();
                         let mut resolved_tokens: Vec<Value> = Vec::new();
@@ -176,7 +176,18 @@ pub fn variable_matcher(
                         }
 
                         
-                        let idx = str_expr.char_indices().nth(1).unwrap();
+                        let idx = str_expr.char_indices().nth(1).unwrap_or_else(|| {
+                            let modules = NovaModules::new();
+                            if let Ok(_mod_result) = modules.handle_module_calls(generic_val.to_string(), &vartable, handler_stream.clone()) {
+                                //handle function return
+                                println!("Result: {_mod_result:?}");
+                                (0, '1')
+                            } else { 
+                                (0, '1')
+                            }
+                        });
+
+                        println!("{:?}", idx);
 
                         // parsing string literals
                         if !str_expr.ends_with("\"") && idx.1.eq(&'"') {

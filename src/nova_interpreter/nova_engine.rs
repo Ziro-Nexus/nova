@@ -165,12 +165,15 @@ impl NovaEngine {
                 let modules = NovaModules::new();
                 if let Ok(_mod_result) = modules.handle_module_calls(ident_str.clone(), self.get_table(), handler_stream.clone()) {
                     //handle function return
+                    println!("\n\nMOD INFO: {}() returned {:?}", ident_str, _mod_result);
                     return;
                 } else {
                     // if is not a Module, maybe a variable ?
                      // searching for idents as variables, check if already has been initialized, if not, panic
                     if let None = self.var_table.get(&ident_str) {
-                        
+                        eprintln!(
+                            "ERROR: '{}' don't exist in this conntext", ident_str
+                        );
                     }
                 }
 

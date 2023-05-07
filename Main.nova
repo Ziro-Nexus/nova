@@ -1,14 +1,7 @@
-include "stdio@print";
+include "nova_print@put";
+include "nova_sum@sum";
 
-init str1 = "Andres";
-init str2 = "Andres Camilo";
+init n1 = sum(2, 2);
 
-init iguales = ([str1] == [str2]);
-init mayor = ([str1] > [str2]);
-init menor = ([str1] < [str2]);
+put("[n1]");
 
-print(
-    "str1 y str2 son iguales: [iguales] \n",
-    "str1 es mayor a str2: [mayor] \n",
-    "str1 es menor a str2: [menor]"
-);

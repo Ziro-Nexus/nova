@@ -172,7 +172,7 @@ impl IntegrationGrammar {
 pub struct FCallGrammar {
     pub ident: syn::Ident,
     pub paren_token: syn::token::Paren,
-    pub args: syn::punctuated::Punctuated<syn::Lit, syn::Token![,]>,
+    pub args: syn::punctuated::Punctuated<syn::Expr, syn::Token![,]>,
     pub span: Span
 }
 impl Parse for FCallGrammar {
@@ -181,7 +181,7 @@ impl Parse for FCallGrammar {
         let content;
         let ident = input.parse()?;
         let paren_token = syn::parenthesized!(content in input);
-        let args = content.parse_terminated(syn::Lit::parse, syn::Token![,])?;
+        let args = content.parse_terminated(syn::Expr::parse, syn::Token![,])?;
         let end_span = input.cursor().span();
         let span = start_span.join(end_span).unwrap_or(start_span);
         

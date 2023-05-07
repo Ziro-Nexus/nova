@@ -16,6 +16,34 @@ pub fn nova_print_value(args: Vec<Value>) -> Result<Value, &'static str>{
     Ok(Value::Null)
 }
 
+pub fn nova_sum_value(args: Vec<Value>) -> Result<Value, &'static str>{
+    
+    let posx = &args[0];
+    println!("{posx:?}");
+    let posy = &args[1];
+
+    let val1: i64;
+    let val2: i64;
+
+    match posx {
+        Value::Integer(e) => val1 = *e,
+        Value::Float(_) => panic!("float is not valid for this function"),
+        Value::Str(_) => panic!("string is not valid for this function"),
+        Value::Boolean(_) => panic!("bool is not valid for this function"),
+        _ => panic!("invalid value"),
+    }
+
+    match posy {
+        Value::Integer(e) => val2 = *e,
+        Value::Float(_) => panic!("float is not valid for this function"),
+        Value::Str(_) => panic!("string is not valid for this function"),
+        Value::Boolean(_) => panic!("bool is not valid for this function"),
+        _ => panic!("invalid value"),
+    }
+
+    Ok(Value::Integer(val1.wrapping_add(val2)))
+}
+
 pub struct NovaModules {
     modules: Vec<(String, fn(Vec<Value>) -> Result<Value, &'static str>)>,
 }
@@ -23,9 +51,17 @@ pub struct NovaModules {
 impl NovaModules {
     pub fn new() -> Self {
         // modules attr of NovaModules receives a vector of (function name, function handler pointer)
-        let modules = vec![("MOD<stdio>".to_owned(), nova_print_value as fn(Vec<_>) -> Result<Value, &'static str>)];
+        let modules = vec![
+            ("MOD<nova_print>".to_owned(), nova_print_value as fn(Vec<_>) -> Result<Value, &'static str>),
+            ("MOD<nova_sum>".to_owned(), nova_sum_value as fn(Vec<_>) -> Result<Value, &'static str>)
+        ];
 
         Self { modules }
+    }
+
+    // TODO: finish this to complete "print" implementation
+    pub fn novautil_idents_to_values(el: &TokenTree) -> Result<Value, &'static str> {
+        unimplemented!()
     }
 
     pub fn novautil_literal_to_values(el: &TokenTree) -> Result<Value, &'static str> {
@@ -69,19 +105,23 @@ impl NovaModules {
         'main_loop: for module in self.get_modules() {
             // check if some MOD<> is integrated into the vartable
             let table_option = vartable.get(&module.0);
+            
             if table_option.is_some() {
                 let table = table_option.unwrap();
+                
                 match table {
                     Value::Module(m) => {
+                        
                         for included_function in m.1.iter() {
                             if included_function.eq(&ident_str) {
                                 let mut parsed_args: Vec<Value> = Vec::new();
                                 for v in stream.clone().into_iter() {
                                     let value = NovaModules::novautil_literal_to_values(&v.clone());
+                                    
                                     if value.is_ok() {
                                         let mut value = value.unwrap();
                                         let value_copy = value.clone();
-
+                                        
                                         // parse variable interpolation
                                         match value_copy {
                                             Value::Str(e) => {
@@ -93,6 +133,7 @@ impl NovaModules {
                                                         e
                                                     ))
                                                     .expect("error parsing var");
+                                                    
                                                     let mut resolved_value = vartable
                                                         .parse_string_vars(e.to_owned())
                                                         .expect("error parsing var");
@@ -107,6 +148,7 @@ impl NovaModules {
                                                     value = Value::Str(resolved_value);
                                                 }
                                             }
+                                            Value::Float(f) => value = Value::Float(f),
                                             _ => (),
                                         }
 
