@@ -142,15 +142,8 @@ impl NovaEngine {
                 if ident_str.eq("init") {
                     //println!("ident variable: {ident_str}");
 
-                    // creating a temportal vartable
-                    //let mut temporal_vartable = self.get_table().clone();
-
                     variable_matcher(e, handler_stream, tree, &mut self.var_table);
-                    
-                    //cannot borrow data in a `&` reference as mutable
-
-                    // replacing the current var_table to the new var table
-                    //self.var_table = temporal_vartable.to_owned();
+                                        
                     return;
                 }
                 if ident_str.eq("stdout") {

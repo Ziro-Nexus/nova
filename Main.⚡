@@ -1,8 +1,7 @@
 include "std_print@print";
-include "math_sum@sum";
-include "math_is_positive@is_positive";
+include "os_args@args";
 
-init big_number = 23424234234;
-init res = sum(big_number, 1) > big_number && is_positive(big_number);
+init path = args(0);
+init nombre = args(1);
 
-print("conditional result: [res]");
+print("[nombre] : [path]");

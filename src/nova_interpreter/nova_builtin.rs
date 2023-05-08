@@ -1,4 +1,5 @@
 use crate::var_table::{self, vtable::Value};
+use std::env;
 
 pub fn std_print(args: Vec<Value>) -> Result<Value, &'static str>{
     for arg in args.iter() {
@@ -15,7 +16,7 @@ pub fn std_print(args: Vec<Value>) -> Result<Value, &'static str>{
 
 pub fn math_sum(args: Vec<Value>) -> Result<Value, &'static str>{
     
-    let posx = &args[0];
+    let arg0 = &args[0];
 
     let posy = &args[1];
 
@@ -23,7 +24,7 @@ pub fn math_sum(args: Vec<Value>) -> Result<Value, &'static str>{
     let val2: i64;
 
 
-    match posx {
+    match arg0 {
         Value::Integer(e) => val1 = *e,
         Value::Float(_) => panic!("float is not valid for this function"),
         Value::Str(_) => panic!("string is not valid for this function"),
@@ -45,11 +46,11 @@ pub fn math_sum(args: Vec<Value>) -> Result<Value, &'static str>{
 
 pub fn math_is_positive(args: Vec<Value>) -> Result<Value, &'static str>{
     
-    let posx = &args[0];
+    let arg0 = &args[0];
 
     let val1: i64;
 
-    match posx {
+    match arg0 {
         Value::Integer(e) => val1 = *e,
         Value::Float(_) => panic!("float is not valid for this function"),
         Value::Str(s) => panic!("string is not valid for this function"),
@@ -61,3 +62,22 @@ pub fn math_is_positive(args: Vec<Value>) -> Result<Value, &'static str>{
     Ok(Value::Boolean(val1.is_positive()))
 }
 
+pub fn os_args(args: Vec<Value>) -> Result<Value, &'static str> {
+    let arg0 = &args[0];
+
+    let val1: i64;
+
+    match arg0 {
+        Value::Integer(e) => val1 = *e,
+        Value::Float(_) => panic!("float is not valid for this function"),
+        Value::Str(s) => panic!("string is not valid for this function"),
+        Value::Boolean(_) => panic!("bool is not valid for this function"),
+        _ => panic!("invalid value"),
+    }
+
+    let argument = env::args().nth(val1 as usize).unwrap_or_else(|| {
+        panic!("Argument in position: {} cannot be found", val1)
+    });
+    
+    Ok(Value::Str(argument))
+}

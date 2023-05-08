@@ -8,6 +8,8 @@ use super::nova_builtin::std_print;
 use super::nova_builtin::math_sum;
 use super::nova_builtin::math_is_positive;
 
+use super::nova_builtin::os_args;
+
 
 pub struct NovaModules {
     modules: Vec<(String, fn(Vec<Value>) -> Result<Value, &'static str>)>,
@@ -19,7 +21,8 @@ impl NovaModules {
         let modules = vec![
             ("MOD<std_print>".to_owned(), std_print as fn(Vec<_>) -> Result<Value, &'static str>),
             ("MOD<math_sum>".to_owned(), math_sum as fn(Vec<_>) -> Result<Value, &'static str>),
-            ("MOD<math_is_positive>".to_owned(), math_is_positive as fn(Vec<_>) -> Result<Value, &'static str>)
+            ("MOD<math_is_positive>".to_owned(), math_is_positive as fn(Vec<_>) -> Result<Value, &'static str>),
+            ("MOD<os_args>".to_owned(), os_args as fn(Vec<_>) -> Result<Value, &'static str>)
         ];
 
         Self { modules }
@@ -53,7 +56,7 @@ impl NovaModules {
                 Ok(value)
             }
             TokenTree::Group(g) => {
-                
+               // println!("{:?}", g);
 
                 let items: Vec<String> = g.to_string().replace("(", "")
                     .replace(")", "")

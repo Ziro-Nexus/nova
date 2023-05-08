@@ -174,6 +174,10 @@ pub fn variable_matcher(
         eprintln!("Error: parsing variable declaration")
     } else {
         // TODO: CONFIRM IS VAR NAME ALREADY EXIST, IN THAT CASE, PANIC    
+        if vartable.get(id.as_str()).is_some() {
+            panic!("Variable {} already exist", id);
+        }
+            
         vartable.set(id, value);
     }
 }
