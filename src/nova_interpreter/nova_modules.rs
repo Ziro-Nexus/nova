@@ -9,6 +9,7 @@ use super::nova_builtin::math_sum;
 use super::nova_builtin::math_is_positive;
 
 use super::nova_builtin::os_args;
+use super::nova_builtin::os_run;
 
 
 pub struct NovaModules {
@@ -22,7 +23,8 @@ impl NovaModules {
             ("MOD<std_print>".to_owned(), std_print as fn(Vec<_>) -> Result<Value, &'static str>),
             ("MOD<math_sum>".to_owned(), math_sum as fn(Vec<_>) -> Result<Value, &'static str>),
             ("MOD<math_is_positive>".to_owned(), math_is_positive as fn(Vec<_>) -> Result<Value, &'static str>),
-            ("MOD<os_args>".to_owned(), os_args as fn(Vec<_>) -> Result<Value, &'static str>)
+            ("MOD<os_args>".to_owned(), os_args as fn(Vec<_>) -> Result<Value, &'static str>),
+            ("MOD<os_run>".to_owned(), os_run as fn(Vec<_>) -> Result<Value, &'static str>),
         ];
 
         Self { modules }
@@ -135,6 +137,7 @@ impl NovaModules {
                                         // parse variable interpolation
                                         match value_copy {
                                             Value::Str(e) => {
+                                               // println!("string argument: {e}");
                                                 
                                                 if e.contains('[') && e.contains(']') {
                                                     //println!("module value : {e}");

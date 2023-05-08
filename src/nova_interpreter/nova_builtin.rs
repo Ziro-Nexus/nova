@@ -1,5 +1,6 @@
-use crate::var_table::{self, vtable::Value};
+use crate::var_table::vtable::Value;
 use std::env;
+use std::process::Command;
 
 pub fn std_print(args: Vec<Value>) -> Result<Value, &'static str>{
     for arg in args.iter() {
@@ -53,7 +54,7 @@ pub fn math_is_positive(args: Vec<Value>) -> Result<Value, &'static str>{
     match arg0 {
         Value::Integer(e) => val1 = *e,
         Value::Float(_) => panic!("float is not valid for this function"),
-        Value::Str(s) => panic!("string is not valid for this function"),
+        Value::Str(_) => panic!("string is not valid for this function"),
         Value::Boolean(_) => panic!("bool is not valid for this function"),
         _ => panic!("invalid value"),
     }
@@ -70,7 +71,7 @@ pub fn os_args(args: Vec<Value>) -> Result<Value, &'static str> {
     match arg0 {
         Value::Integer(e) => val1 = *e,
         Value::Float(_) => panic!("float is not valid for this function"),
-        Value::Str(s) => panic!("string is not valid for this function"),
+        Value::Str(_) => panic!("string is not valid for this function"),
         Value::Boolean(_) => panic!("bool is not valid for this function"),
         _ => panic!("invalid value"),
     }
@@ -80,4 +81,26 @@ pub fn os_args(args: Vec<Value>) -> Result<Value, &'static str> {
     });
     
     Ok(Value::Str(argument))
+}
+
+pub fn os_run(args: Vec<Value>) -> Result<Value, &'static str> {
+    let arg0 = &args[0];
+
+    let val1: String;
+
+    match arg0 {
+        Value::Integer(_) => panic!("integer is not valid for this function"),
+        Value::Float(_) => panic!("float is not valid for this function"),
+        Value::Str(s) => val1 = s.to_owned(),
+        Value::Boolean(_) => panic!("bool is not valid for this function"),
+        _ => panic!("invalid value"),
+    }
+
+    let output = Command::new(&val1)
+        .output()
+        .expect("Failed to execute command");
+
+    let stdout_output = String::from_utf8_lossy(&output.stdout).to_string();
+    
+    Ok(Value::Str(stdout_output))
 }
