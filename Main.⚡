@@ -1,7 +1,11 @@
 include "std_print@print";
 include "os_args@args";
 
-init path = args(0);
-init nombre = args(1);
+init hola = -2+2-2;
+init s = "hola";
+init s2 = "hola";
+init a = !!true == !!false;
 
-print("[nombre] : [path]");
+
+
+print("[hola] : [a] : [s]");

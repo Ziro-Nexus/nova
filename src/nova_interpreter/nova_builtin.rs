@@ -104,3 +104,4 @@ pub fn os_run(args: Vec<Value>) -> Result<Value, &'static str> {
     
     Ok(Value::Str(stdout_output))
 }
+

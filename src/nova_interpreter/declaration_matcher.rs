@@ -116,7 +116,7 @@ pub fn variable_matcher(
                                 Value::Float(f) => str_expr.push_str(f.to_string().as_str()),
                                 Value::Boolean(b) => str_expr.push_str(b.to_string().as_str()),
                                 Value::Str(s) => {
-                                    if !s.starts_with("\"") {
+                                    if !s.starts_with("\"") && !s.eq("-") && !s.eq("!") && !s.eq("&"){
                                         let parsed_s = format!("\"{}", s);
                                         str_expr.push_str(&parsed_s);
                                     } else {
@@ -132,25 +132,42 @@ pub fn variable_matcher(
                             panic!("EEROR PARSING IDX");
                         });
 
-                        //println!("{:?}", idx);
 
                         // parsing string literals
                         if !str_expr.ends_with("\"") && idx.1.eq(&'"') {
-                            //println!("wow{}", str_expr);
+                           
+                            // fixing quotes of "=" symbols
                             str_expr = format!("{}\"", str_expr);
-                            // 
+                            if str_expr.contains("\"=\""){
+                                str_expr = str_expr.replace("\"=\"", "\"=").to_owned();
+                            }
+                            // fixing quotes of "&&" symbol
+                            if str_expr.contains("&&"){
+                                str_expr = str_expr.replace("&&", "\"&&").to_owned();
+                            }
+                            // fixing quotes of != symbol
+                            if str_expr.contains("!\"="){
+                                str_expr = str_expr.replace("!\"=", "!=").to_owned();
+                                str_expr.pop();
+                            }
+                            
+                             println!("wow{}", str_expr);
+                            
+                            
                         } else {
                             str_expr = str_expr.replace('"', "").to_owned();
-                            //println!("this: {}", str_expr);println!
+                            str_expr = str_expr.replace("\"=\"=", "==");
+                            
                         }
+                        
                         str_expr.push(')');
+                        
                        
                         
 
                         let evaluated = evalexpr::eval(&str_expr)
                             .unwrap_or_else(|e| panic!("{}", e.to_string()));
 
-                        //println!("evaluated: {evaluated}");
 
                         value = match evaluated {
                             evalexpr::Value::String(s) => Value::Str(s),
@@ -159,6 +176,7 @@ pub fn variable_matcher(
                             evalexpr::Value::Boolean(b) => Value::Boolean(b),
                             _ => Value::Null,
                         };
+                        //println!("value: {value:?}");
                         
                         return;
                     }
