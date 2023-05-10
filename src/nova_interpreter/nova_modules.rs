@@ -170,6 +170,8 @@ impl NovaModules {
                                                         
 
                                                     parsed_args.push(Value::Str(resolved_value));
+                                                } else {
+                                                    parsed_args.push(Value::Str(e));
                                                 }
                                             }
                                             Value::Float(f) => parsed_args.push(Value::Float(f)),

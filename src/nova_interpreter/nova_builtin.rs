@@ -87,14 +87,10 @@ pub fn os_args(args: Vec<Value>) -> Result<Value, &'static str> {
 pub fn os_run(args: Vec<Value>) -> Result<Value, &'static str> {
 
 
-    if args.is_empty() {
-        return Ok(Value::Null)
-    }
-
-
     let arg0 = &args[0];
+    
 
-    let val1: String;
+    let mut val1: String;
 
     match arg0 {
         Value::Integer(_) => panic!("integer is not valid for this function"),
@@ -104,13 +100,19 @@ pub fn os_run(args: Vec<Value>) -> Result<Value, &'static str> {
         _ => panic!("invalid value"),
     }
 
-    let val1 = format!("\"{}\"", val1);
-
+    if val1.starts_with('"') {
+        val1 = format!("\"{}\"", val1);
+    } else {
+        val1 = format!("{}", val1);
+    }
+    
     let output = Command::new("bash")
         .arg("-c")
         .arg(&val1)
         .stdout(Stdio::piped())
         .output();
+
+   // println!("cmd: {v}", v = output.is_ok());
     
     if output.is_err() {
         return Ok(Value::Null);

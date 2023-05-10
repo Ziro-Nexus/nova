@@ -1,22 +1,23 @@
 include "std_print@print";
-include "os_args@ObtenerArgumentoDelSistema";
-include "os_run@EjecutarComandoDelSistema";
+include "os_args@SysArgv";
+include "os_run@CommandOutput";
 
-init ruta_del_sistema = ObtenerArgumentoDelSistema(0);
-init comando_directorio = "pwd";
-init comando_procesos = "ps";
-init comando_usuario = "whoami";
-init comando_sistema = "uname";
+init system_path = SysArgv(0);
+init dir_path = "toi";
+init command_proccess = "ps";
+init command_user = "whoami";
+init command_system = "uname";
 
-init procesos = EjecutarComandoDelSistema(comando_procesos);
-init usuario = EjecutarComandoDelSistema(comando_usuario);
-init sistema = EjecutarComandoDelSistema(comando_sistema);
-init directorio = EjecutarComandoDelSistema(comando_directorio);
-
+init proccess = CommandOutput(command_proccess);
+init user = CommandOutput(command_user);
+init system = CommandOutput(command_system);
+init dir = CommandOutput(dir_path);
 
 print(
-    "Bienvenido al sistema operativo [sistema] usuario [usuario]\n",
-    "Ruta del sistema en ejecución: [ruta_del_sistema]\n",
-    "Directoria actual del sistema: [directorio]\n",
-    "informacion de procesos activos en el sistema:\n[procesos]"
+    "Welcome to the [system] OS user [user]\n",
+    "Path of the system in runtime: [system_path]\n",
+    "Currenct dir of the system: [dir]\n",
+    "Active PID's: \n [proccess]"
 );
+
+CommandOutput("touch hello_world");
