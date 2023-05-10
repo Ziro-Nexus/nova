@@ -151,7 +151,7 @@ pub fn variable_matcher(
                                 str_expr.pop();
                             }
                             
-                             println!("wow{}", str_expr);
+                             //println!("wow{}", str_expr);
                             
                             
                         } else {

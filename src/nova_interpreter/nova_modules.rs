@@ -37,6 +37,7 @@ impl NovaModules {
 
     pub fn novautil_literal_to_values(el: &TokenTree, v: &mut Vec<Value>, vartable: &var_table::vtable::VarTable) -> Result<Value, &'static str> {
         let mut value = Value::Null;
+        // TODO: IMPLEMENT PASSING VARIABLE NAMES AS ARGUMENTS OF FUNCTIONS
         match el {
             TokenTree::Literal(lit) => {
                 if let Ok(e) = lit.to_string().parse::<i64>() {
@@ -58,11 +59,11 @@ impl NovaModules {
                 Ok(value)
             }
             TokenTree::Group(g) => {
-               // println!("{:?}", g);
+               //println!("handling argument of functions as groups: {:?}", g);
 
                 let items: Vec<String> = g.to_string().replace("(", "")
                     .replace(")", "")
-                    .replace(" ", "")
+                    .replace("(", "")
                     .split(",")
                     .map(|s| s.to_owned())
                     .collect();
@@ -80,12 +81,16 @@ impl NovaModules {
                     let try_float = item.parse::<f64>();
                     let try_bool = item.parse::<bool>();
 
-                    if try_num.is_ok() {v.push(Value::Integer(try_num.unwrap()))}
+                    if try_num.is_ok() {v.push(Value::Integer(try_num.clone().unwrap()))}
                     else {
-                        if try_float.is_ok() {v.push(Value::Float(try_float.unwrap()))}
+                        if try_float.is_ok() {v.push(Value::Float(try_float.clone().unwrap()))}
                         else {
-                            if try_bool.is_ok() {v.push(Value::Boolean(try_bool.unwrap()))}
+                            if try_bool.is_ok() {v.push(Value::Boolean(try_bool.clone().unwrap()))}
                         }
+                    }
+
+                    if try_num.is_err() && try_bool.is_err() && try_float.is_err() {
+                        v.push(Value::Str(item));
                     }
                 }
                 return Ok(Value::Null)
@@ -121,11 +126,11 @@ impl NovaModules {
                                 let mut parsed_args: Vec<Value> = Vec::new();
                                 for v in stream.clone().into_iter() {
                                     
-                                    /* DEBUG: match v.clone() {
+                                    match v.clone() {
                                         TokenTree::Group(g) => println!("group to handle: {}", g.to_string()),
                                         TokenTree::Ident(i) => println!("ident to handle: {}", i.to_string()),
                                         _ => ()
-                                    }*/
+                                    }
                                     let value = NovaModules::novautil_literal_to_values(&v.clone(), &mut parsed_args, vartable);
                                    
                                     
@@ -137,7 +142,7 @@ impl NovaModules {
                                         // parse variable interpolation
                                         match value_copy {
                                             Value::Str(e) => {
-                                               // println!("string argument: {e}");
+                                                //println!("string argument: {e}");
                                                 
                                                 if e.contains('[') && e.contains(']') {
                                                     //println!("module value : {e}");

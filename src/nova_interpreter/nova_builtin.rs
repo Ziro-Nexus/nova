@@ -1,6 +1,7 @@
 use crate::var_table::vtable::Value;
 use std::env;
-use std::process::Command;
+use std::io::Stdin;
+use std::process::{Command, Stdio};
 
 pub fn std_print(args: Vec<Value>) -> Result<Value, &'static str>{
     for arg in args.iter() {
@@ -96,12 +97,17 @@ pub fn os_run(args: Vec<Value>) -> Result<Value, &'static str> {
         _ => panic!("invalid value"),
     }
 
-    let output = Command::new(&val1)
-        .output()
-        .expect("Failed to execute command");
+    let val1 = format!("\"{}\"", val1);
 
-    let stdout_output = String::from_utf8_lossy(&output.stdout).to_string();
-    
-    Ok(Value::Str(stdout_output))
+    let output = Command::new("bash")
+        .arg("-c")
+        .arg(&val1)
+        .stdout(Stdio::piped())
+        .output()
+        .expect("failed executing command");
+
+    let res = String::from_utf8_lossy(&output.stdout).to_string();
+
+    Ok(Value::Str(res.to_owned()))
 }
 

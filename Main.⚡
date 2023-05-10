@@ -1,11 +1,7 @@
 include "std_print@print";
 include "os_args@args";
+include "os_run@run";
 
-init hola = -2+2-2;
-init s = "hola";
-init s2 = "hola";
-init a = !!true == !!false;
-
-
-
-print("[hola] : [a] : [s]");
+init st = "ls -al";
+init hola = run(st);
+print("resultado del comando ls: \n[hola]");
