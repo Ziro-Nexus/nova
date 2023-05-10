@@ -124,7 +124,7 @@ pub fn variable_matcher(
                                     }
                                 }
                                 Value::Module(_) => (),
-                                Value::Null => (),
+                                Value::Null => str_expr.push_str("\"NULL"),
                             }
                         }
 

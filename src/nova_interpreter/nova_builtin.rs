@@ -108,6 +108,10 @@ pub fn os_run(args: Vec<Value>) -> Result<Value, &'static str> {
 
     let res = String::from_utf8_lossy(&output.stdout).to_string();
 
+    if res.is_empty() {
+        return Ok(Value::Null);
+    }
+
     Ok(Value::Str(res.to_owned()))
 }
 

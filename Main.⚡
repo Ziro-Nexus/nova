@@ -1,7 +1,8 @@
 include "std_print@print";
 include "os_args@args";
-include "os_run@run";
+include "os_run@run_command";
 
-init st = "ls -al";
-init hola = run(st);
-print("resultado del comando ls: \n[hola]");
+init neofetch = run_command("neofetch");
+print("NEOFETCH 1: \n[neofetch]");
+print("NEOFETCH 2: \n[neofetch]");
+print("NEOFETCH 3: \n[neofetch]");
