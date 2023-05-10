@@ -1,0 +1,9 @@
+include "std_print@print";
+include "math_sum@sum";
+include "os_args@ObtenerArgumentoDelSistema";
+include "os_run@EjecutarComandoDelSistema";
+
+init n = 2;
+init n1 = sum(n, n) + sum(n, n) + sum(n,n);
+
+print("[n1]");
