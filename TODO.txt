@@ -1,3 +1,4 @@
 PENDIENTE:
+    - ARREGLAR EXPRESION MATEMATICAS
     - ARREGLAR LOS ARGUMENTOS DE FUNCIONES COMO STRING POR EJEMPLO cmd("ls")
     - Crear funciones builtin para comparar strings

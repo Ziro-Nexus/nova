@@ -33,7 +33,7 @@ pub fn variable_matcher(
                 // TODO: FIX PASSING VARIABLES AS LITERALS
                 match el {
                     // TODO: handle TokenTree::Group to parse full expressions
-                    
+        
 
                     // TODO: handle var names in variable expressions: set age = <var>;
                     (generic_val) => {
@@ -45,7 +45,11 @@ pub fn variable_matcher(
                             let match_copy = tok.clone();
 
                             match match_copy {
-                                TokenTree::Group(_) => (),
+                                TokenTree::Group(g) => {
+                                    if evalexpr::eval(&g.to_string()).is_ok() && !g.to_string().contains(","){
+                                        token_list.push(tok);
+                                    }
+                                },
                                 TokenTree::Ident(i) => {
                                     if !i.to_string().eq("init") {
                                         token_list.push(tok)
@@ -55,6 +59,7 @@ pub fn variable_matcher(
                                 TokenTree::Literal(_) => token_list.push(tok),
                             }
                         }
+
 
                         id = token_list[0].to_string();
                         let modules = NovaModules::new();
@@ -74,7 +79,22 @@ pub fn variable_matcher(
 
                             // resolving idents as var names
                             match tok {
-                                TokenTree::Group(_) => todo!(),
+                                TokenTree::Group(g) => {
+                                    //println!("{}", g.to_string());
+                                    let expr = g.to_string();
+                                    let eval_group_result = evalexpr::eval(&expr)
+                                        .expect(&format!("Failed reading expression {}", &expr));
+
+                                    match eval_group_result {
+                                        evalexpr::Value::String(s) => (),
+                                        evalexpr::Value::Float(f) => resolved_tokens.push(Value::Float(f)),
+                                        evalexpr::Value::Int(i) => resolved_tokens.push(Value::Integer(i)),
+                                        evalexpr::Value::Boolean(b) => resolved_tokens.push(Value::Boolean(b)),
+                                        evalexpr::Value::Tuple(_) => todo!(),
+                                        evalexpr::Value::Empty => todo!(),
+                                    }
+                                    
+                                },
                                 TokenTree::Ident(i) => {
                                     
                                     if let Ok(_mod_result) = modules.handle_module_calls(
@@ -116,6 +136,7 @@ pub fn variable_matcher(
                                 Value::Float(f) => str_expr.push_str(f.to_string().as_str()),
                                 Value::Boolean(b) => str_expr.push_str(b.to_string().as_str()),
                                 Value::Str(s) => {
+                                    
                                     if !s.starts_with("\"") && !s.eq("-") && !s.eq("!") && !s.eq("&"){
                                         let parsed_s = format!("\"{}", s);
                                         str_expr.push_str(&parsed_s);
@@ -127,6 +148,8 @@ pub fn variable_matcher(
                                 Value::Null => str_expr.push_str("\"NULL"),
                             }
                         }
+
+                        
 
                         let idx = str_expr.char_indices().nth(1).unwrap_or_else(|| {
                             panic!("EEROR PARSING IDX");
@@ -151,7 +174,7 @@ pub fn variable_matcher(
                                 str_expr.pop();
                             }
                             
-                             //println!("wow{}", str_expr);
+                             
                             
                             
                         } else {
@@ -162,7 +185,7 @@ pub fn variable_matcher(
                         
                         str_expr.push(')');
                         
-                       
+                        
                         
 
                         let evaluated = evalexpr::eval(&str_expr)

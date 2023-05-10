@@ -59,14 +59,16 @@ impl NovaModules {
                 Ok(value)
             }
             TokenTree::Group(g) => {
-               //println!("handling argument of functions as groups: {:?}", g);
+               //println!("handling argument of functions as groups: {:?}", g.to_string());
 
                 let items: Vec<String> = g.to_string().replace("(", "")
                     .replace(")", "")
                     .replace("(", "")
                     .split(",")
-                    .map(|s| s.to_owned())
+                    .map(|s| s.trim().to_owned())
                     .collect();
+
+                //println!("parsed items: {items:?}");
                 
                 'main_mp: for item in items {
                     
@@ -93,6 +95,8 @@ impl NovaModules {
                         v.push(Value::Str(item));
                     }
                 }
+                //println!("final parsing: {:?}", v);
+                
                 return Ok(Value::Null)
             },
             _ => Err("Error parsing literal"),

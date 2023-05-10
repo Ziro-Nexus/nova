@@ -112,6 +112,6 @@ pub fn os_run(args: Vec<Value>) -> Result<Value, &'static str> {
         return Ok(Value::Null);
     }
 
-    Ok(Value::Str(res.to_owned()))
+    Ok(Value::Str(res.trim().to_owned()))
 }
 

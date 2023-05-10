@@ -1,8 +1,22 @@
 include "std_print@print";
-include "os_args@args";
-include "os_run@run_command";
+include "os_args@ObtenerArgumentoDelSistema";
+include "os_run@EjecutarComandoDelSistema";
 
-init neofetch = run_command("neofetch");
-print("NEOFETCH 1: \n[neofetch]");
-print("NEOFETCH 2: \n[neofetch]");
-print("NEOFETCH 3: \n[neofetch]");
+init ruta_del_sistema = ObtenerArgumentoDelSistema(0);
+init comando_directorio = "pwd";
+init comando_procesos = "ps";
+init comando_usuario = "whoami";
+init comando_sistema = "uname";
+
+init procesos = EjecutarComandoDelSistema(comando_procesos);
+init usuario = EjecutarComandoDelSistema(comando_usuario);
+init sistema = EjecutarComandoDelSistema(comando_sistema);
+init directorio = EjecutarComandoDelSistema(comando_directorio);
+
+
+print(
+    "Bienvenido al sistema operativo [sistema] usuario [usuario]\n",
+    "Ruta del sistema en ejecución: [ruta_del_sistema]\n",
+    "Directoria actual del sistema: [directorio]\n",
+    "informacion de procesos activos en el sistema:\n[procesos]"
+);
