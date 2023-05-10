@@ -85,6 +85,13 @@ pub fn os_args(args: Vec<Value>) -> Result<Value, &'static str> {
 }
 
 pub fn os_run(args: Vec<Value>) -> Result<Value, &'static str> {
+
+
+    if args.is_empty() {
+        return Ok(Value::Null)
+    }
+
+
     let arg0 = &args[0];
 
     let val1: String;
@@ -103,10 +110,13 @@ pub fn os_run(args: Vec<Value>) -> Result<Value, &'static str> {
         .arg("-c")
         .arg(&val1)
         .stdout(Stdio::piped())
-        .output()
-        .expect("failed executing command");
+        .output();
+    
+    if output.is_err() {
+        return Ok(Value::Null);
+    }
 
-    let res = String::from_utf8_lossy(&output.stdout).to_string();
+    let res = String::from_utf8_lossy(&output.unwrap().stdout).to_string();
 
     if res.is_empty() {
         return Ok(Value::Null);
